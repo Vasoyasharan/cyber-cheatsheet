@@ -63,9 +63,11 @@ Access the live demo: [https://cyber-cheatsheet.onrender.com](https://cyber-chea
 
 ## 🖼️ Screenshots
 
-| Cheat Sheets                           | Command Builders                        |
-| -------------------------------------- | --------------------------------------- |
-| ![Cheat Sheets](./public/cheatsheet.png)  | ![Builder](./public/CMDbuilder.png)        |
+Cheat Sheets
+![Cheat Sheets](./public/cheatsheet.png)
+
+Command Builders
+![Builder](./public/CMDbuilder.png)
 
 ---
 
@@ -81,7 +83,7 @@ Misuse of this toolkit can lead to criminal charges. Use responsibly.
 
 Contributions are welcome!
 
-- 🐛 Found a bug? [Open an issue](https://github.com/Vasoyasharan/CyberCheat/issues)
+- 🐛 Found a bug? [Open an issue](https://github.com/Vasoyasharan/cyber-cheatsheet/issues)
 - 🌟 Got a feature idea? Submit a pull request or start a discussion.
 
 ---
