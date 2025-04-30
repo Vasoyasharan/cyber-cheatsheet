@@ -1,0 +1,103 @@
+/* Light theme */
+[data-theme="light"] {
+  --primary: #6e48aa;
+  --primary-dark: #4a2d7a;
+  --secondary: #9d50bb;
+  --accent: #4776e6;
+  --text: #333;
+  --text-light: #666;
+  --text-lighter: #999;
+  --bg: #f5f5f5;
+  --card-bg: #fff;
+  --border: #e1e1e1;
+  --success: #4caf50;
+  --warning: #ff9800;
+  --danger: #f44336;
+  --info: #2196f3;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --nav-bg: #fff;
+  --footer-bg: #f0f0f0;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --primary: #9d50bb;
+  --primary-dark: #6e48aa;
+  --secondary: #4776e6;
+  --accent: #4a2d7a;
+  --text: #f5f5f5;
+  --text-light: #ccc;
+  --text-lighter: #999;
+  --bg: #121212;
+  --card-bg: #1e1e1e;
+  --border: #333;
+  --success: #81c784;
+  --warning: #ffb74d;
+  --danger: #e57373;
+  --info: #64b5f6;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --nav-bg: #1a1a1a;
+  --footer-bg: #0d0d0d;
+}
+
+/* Theme-specific component styles */
+.navbar.light {
+  background-color: var(--nav-bg);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar.dark {
+  background-color: var(--nav-bg);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.footer.light {
+  background-color: var(--footer-bg);
+  border-top: 1px solid var(--border);
+}
+
+.footer.dark {
+  background-color: var(--footer-bg);
+  border-top: 1px solid var(--border);
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.theme-toggle:hover {
+  background-color: var(--primary-dark);
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
+}
