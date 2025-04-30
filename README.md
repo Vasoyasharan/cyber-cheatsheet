@@ -64,7 +64,7 @@ Access the live demo: [https://cyber-cheatsheet.onrender.com](https://cyber-chea
 ## 🖼️ Screenshots
 
 Cheat Sheets
-![Cheat Sheets](./public/cheatsheet.png)
+![Cheat Sheets](./public/chsht.png)
 
 Command Builders
 ![Builder](./public/CMDbuilder.png)
