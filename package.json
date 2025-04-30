@@ -16,8 +16,10 @@
     "react-icons": "^5.5.0",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.5.3",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "react-toastify": "^11.0.5",
+    "rimraf": "^6.0.1",
+    "rollup-plugin-terser": "^7.0.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
