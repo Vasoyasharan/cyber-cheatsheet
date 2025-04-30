@@ -1,10 +1,15 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaSearch, FaLinux, FaWindows, FaGlobe } from 'react-icons/fa';
+import { FaSearch, FaLinux, FaWindows, FaGlobe, FaUserSecret, FaCode, FaServer, FaUserShield, FaCloud } from 'react-icons/fa';
 import LinuxPrivEsc from '../components/CheatSheets/LinuxPrivEsc';
 import WindowsPrivEsc from '../components/CheatSheets/WindowsPrivEsc';
 import WebAppTesting from '../components/CheatSheets/WebAppTesting';
-import ActiveDirectory from '../components/CheatSheets/ActiveDirectory';
+import ActiveDirectoryAttacks from '../components/CheatSheets/ActiveDirectoryAttacks';
+import InitialAccessTechniques from '../components/CheatSheets/InitialAccessTechniques';
+import PayloadGeneration from '../components/CheatSheets/PayloadGeneration';
+import C2Frameworks from '../components/CheatSheets/C2Frameworks';
+import PostExploitation from '../components/CheatSheets/PostExploitation';
+import CloudPentesting from '../components/CheatSheets/CloudPentesting';
 import AnimatedCard from '../components/UI/AnimatedCard';
 import GradientHeader from '../components/UI/GradientHeader';
 
@@ -34,12 +39,47 @@ const CheatSheets = () => {
       component: <WebAppTesting />,
       category: 'Web Security'
     },
-     { 
+    { 
       id: 'active',
-      name: 'Active Directiry',
+      name: 'Active Directory',
       icon: <FaGlobe />, 
-      component: <ActiveDirectory />,
-      category: 'Web Security'
+      component: <ActiveDirectoryAttacks />,
+      category: 'Enterprise Security'
+    },
+    { 
+      id: 'initial',
+      name: 'Initial Access',
+      icon: <FaUserSecret />, 
+      component: <InitialAccessTechniques />,
+      category: 'Red Teaming'
+    },
+    { 
+      id: 'payload',
+      name: 'Payload Generation',
+      icon: <FaCode />, 
+      component: <PayloadGeneration />,
+      category: 'Red Teaming'
+    },
+    { 
+      id: 'c2',
+      name: 'C2 Frameworks',
+      icon: <FaServer />, 
+      component: <C2Frameworks />,
+      category: 'Red Teaming'
+    },
+    { 
+      id: 'post',
+      name: 'Post Exploitation',
+      icon: <FaUserShield />, 
+      component: <PostExploitation />,
+      category: 'Red Teaming'
+    },
+    { 
+      id: 'cloud',
+      name: 'Cloud Pentesting',
+      icon: <FaCloud />, 
+      component: <CloudPentesting />,
+      category: 'Cloud Security'
     }
   ];
 

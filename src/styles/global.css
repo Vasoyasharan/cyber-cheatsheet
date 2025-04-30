@@ -740,7 +740,6 @@ pre code {
 
 .history-panel li:hover {
   background-color: var(--primary);
-  color: white;
 }
 
 /* Form row for side-by-side inputs */

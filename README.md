@@ -1,70 +1,89 @@
-# Getting Started with Create React App
+# 🔐 CyberCheat: Interactive Cybersecurity Toolkit
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![Project Banner](./public/Home.png) <!-- Replace with actual image URL -->
 
-## Available Scripts
+**Quick-access command builders & cheat sheets for ethical hackers, pentesters, and security professionals.**
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🚀 Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- 🎛 **Interactive Command Builders**  
+  Generate customized commands for tools like `Nmap`, `Metasploit`, `SQLmap`, `Hydra`, and more.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- 📚 **Comprehensive Cheat Sheets**  
+  Instant references for:
+  - Linux & Windows Privilege Escalation
+  - Web Application Testing
+  - Cloud Pentesting (AWS, Azure)
+  - Active Directory Enumeration & Attacks
+  - Payload Generation, C2 Frameworks & Post-Exploitation
 
-### `npm test`
+- 📋 **One-Click Copy**  
+  Copy any command or code block directly to your clipboard with a single click.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- 💡 **Responsive UI**  
+  Mobile-friendly and optimized for all devices.
 
-### `npm run build`
+- 🌓 **Dark/Light Mode**  
+  Switch between themes based on your preference.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🛠️ Tech Stack
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **Frontend**: React.js (Hooks), Framer Motion (Animations)
+- **Styling**: CSS Custom Properties (for Theming)
+- **Icons**: React Icons
+- **Markdown Rendering**: `react-markdown`
+- **Clipboard**: `react-copy-to-clipboard`
+- **Notifications**: `react-toastify`
+- **Hosting**: [Vercel](https://vercel.com) / Netlify / GitHub Pages (choose your host)
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 📦 Installation & Usage
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 🔧 Local Development
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+git clone https://github.com/Vasoyasharan/cyber-cheatsheet.git
+cd cyber cheatsheet
+npm install
+npm start
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+## 🌐 Web Access
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Access the live demo: [https://cyber-cheatsheet.onrender.com](https://cyber-cheatsheet.onrender.com)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+## 🖼️ Screenshots
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+| Cheat Sheets                           | Command Builders                        |
+| -------------------------------------- | --------------------------------------- |
+| ![Cheat Sheets](./public/cheatsheet.png)  | ![Builder](./public/CMDbuilder.png)        |
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## ⚠️ Legal Disclaimer
 
-### Making a Progressive Web App
+This tool is intended **strictly for educational and authorized penetration testing** purposes.  
+**Always get proper authorization before conducting any tests.**  
+Misuse of this toolkit can lead to criminal charges. Use responsibly.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+---
 
-### Advanced Configuration
+## 🤝 Contributing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Contributions are welcome!
 
-### Deployment
+- 🐛 Found a bug? [Open an issue](https://github.com/Vasoyasharan/CyberCheat/issues)
+- 🌟 Got a feature idea? Submit a pull request or start a discussion.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+---
 
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Built with ❤️ by [Sharan Vasoya](https://github.com/Vasoyasharan)
