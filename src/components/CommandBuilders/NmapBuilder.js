@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaCopy, FaInfoCircle, FaTerminal, FaHistory } from 'react-icons/fa';
+import { FaCopy, FaInfoCircle, FaTerminal, FaHistory, FaLightbulb, FaRedo } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { useCommandHistory } from '../../contexts/CommandHistoryContext';
 import { validateIpAddress, validateDomain, sanitizeInput } from '../../utils/commandHelpers';
@@ -21,7 +21,37 @@ const NmapBuilder = () => {
   });
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [targetError, setTargetError] = useState('');
+  const [example, setExample] = useState('');
   const { addToHistory } = useCommandHistory();
+  const scanExamples = [
+    { label: 'Top 100 Ports (Fast)', command: 'nmap -sS --top-ports 100 <target>' },
+    { label: 'Full TCP Scan', command: 'nmap -sS -p 1-65535 <target>' },
+    { label: 'Aggressive Scan', command: 'nmap -A <target>' },
+    { label: 'Firewall Evasion', command: 'nmap -sS -T2 -f <target>' },
+    { label: 'UDP Scan', command: 'nmap -sU <target>' },
+    { label: 'Vuln Scan', command: 'nmap --script vuln <target>' },
+  ];
+  const handleExample = (cmd) => {
+    setExample(cmd);
+    toast.info('Example loaded! Edit as needed.', { position: 'bottom-right', autoClose: 1500, hideProgressBar: true });
+  };
+
+  const handleReset = () => {
+    setScanType('sS');
+    setTarget('');
+    setOptions({
+      verbose: false,
+      osDetection: false,
+      serviceVersion: false,
+      portRange: '1-1000',
+      timing: 'T4',
+      output: '',
+      script: ''
+    });
+    setShowAdvanced(false);
+    setTargetError('');
+    setExample('');
+  };
 
   const scanTypes = [
     { value: 'sS', label: 'Stealth Scan (SYN)', description: 'Half-open scan that doesn\'t complete TCP connections' },
@@ -110,9 +140,9 @@ const NmapBuilder = () => {
         <h2>Nmap Command Builder</h2>
         <p>Network scanning and enumeration tool</p>
       </div>
-      
+
       <div className="form-group">
-        <label>Scan Type</label>
+        <label>Scan Type <FaInfoCircle title="Choose the type of scan. SYN is stealthy, Connect is full TCP, etc." /></label>
         <select 
           value={scanType} 
           onChange={(e) => setScanType(e.target.value)}
@@ -128,9 +158,9 @@ const NmapBuilder = () => {
           {scanTypes.find(t => t.value === scanType).description}
         </div>
       </div>
-      
+
       <div className="form-group">
-        <label>Target (IP or Domain)</label>
+        <label>Target (IP or Domain) <FaInfoCircle title="Enter a valid IP address or domain name to scan." /></label>
         <input
           type="text"
           value={target}
@@ -140,14 +170,30 @@ const NmapBuilder = () => {
         />
         {targetError && <div className="error-message">{targetError}</div>}
       </div>
-      
+
+      <div className="form-group">
+        <label>Quick Examples <FaLightbulb title="Load a common scan example. Edit as needed." /></label>
+        <select className="select-input" value={example} onChange={e => handleExample(e.target.value)}>
+          <option value="">-- Select Example --</option>
+          {scanExamples.map(ex => (
+            <option key={ex.label} value={ex.command}>{ex.label}</option>
+          ))}
+        </select>
+        {example && (
+          <div className="description" style={{marginTop: '0.5rem'}}>
+            <code>{example}</code>
+          </div>
+        )}
+      </div>
+
       <button 
         onClick={() => setShowAdvanced(!showAdvanced)}
         className="toggle-button"
       >
         {showAdvanced ? 'Hide Advanced Options' : 'Show Advanced Options'}
       </button>
-      
+      <button onClick={handleReset} className="toggle-button" style={{marginLeft: '1rem'}} title="Reset all fields"><FaRedo /> Reset</button>
+
       <AnimatePresence>
         {showAdvanced && (
           <motion.div
@@ -158,7 +204,7 @@ const NmapBuilder = () => {
             className="advanced-options"
           >
             <div className="form-group">
-              <label>Port Range</label>
+              <label>Port Range <FaInfoCircle title="Specify ports to scan, e.g. 1-1000 or 22,80,443" /></label>
               <input
                 type="text"
                 value={options.portRange}
@@ -167,9 +213,9 @@ const NmapBuilder = () => {
                 className="text-input"
               />
             </div>
-            
+
             <div className="form-group">
-              <label>Nmap Script</label>
+              <label>Nmap Script <FaInfoCircle title="Use NSE scripts for advanced scans, e.g. vuln, http-enum" /></label>
               <input
                 type="text"
                 value={options.script}
@@ -178,7 +224,7 @@ const NmapBuilder = () => {
                 className="text-input"
               />
             </div>
-            
+
             <div className="checkbox-group">
               <label>
                 <input
@@ -186,30 +232,30 @@ const NmapBuilder = () => {
                   checked={options.verbose}
                   onChange={(e) => setOptions({...options, verbose: e.target.checked})}
                 />
-                Verbose Output (-v)
+                Verbose Output (-v) <FaInfoCircle title="Show more output details" />
               </label>
-              
+
               <label>
                 <input
                   type="checkbox"
                   checked={options.osDetection}
                   onChange={(e) => setOptions({...options, osDetection: e.target.checked})}
                 />
-                OS Detection (-O)
+                OS Detection (-O) <FaInfoCircle title="Enable OS detection" />
               </label>
-              
+
               <label>
                 <input
                   type="checkbox"
                   checked={options.serviceVersion}
                   onChange={(e) => setOptions({...options, serviceVersion: e.target.checked})}
                 />
-                Service Version (-sV)
+                Service Version (-sV) <FaInfoCircle title="Detect service versions" />
               </label>
             </div>
-            
+
             <div className="form-group">
-              <label>Timing Template</label>
+              <label>Timing Template <FaInfoCircle title="Set scan speed. T0=slowest, T5=fastest." /></label>
               <select
                 value={options.timing}
                 onChange={(e) => setOptions({...options, timing: e.target.value})}
@@ -225,9 +271,9 @@ const NmapBuilder = () => {
                 {timingOptions.find(t => t.value === options.timing).description}
               </div>
             </div>
-            
+
             <div className="form-group">
-              <label>Output File (optional)</label>
+              <label>Output File (optional) <FaInfoCircle title="Save results to a file" /></label>
               <input
                 type="text"
                 value={options.output}
@@ -239,7 +285,7 @@ const NmapBuilder = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       <div className="command-preview">
         <div className="preview-header">
           <h3>Generated Command</h3>
@@ -247,11 +293,11 @@ const NmapBuilder = () => {
             <FaCopy /> Copy
           </button>
         </div>
-        <code>{buildCommand()}</code>
+        <code>{example ? example : buildCommand()}</code>
       </div>
-      
+
       <CommandHistory />
-      
+
       <div className="info-tip">
         <FaInfoCircle />
         <p>Remember: Only scan networks you have permission to test. Unauthorized scanning may be illegal.</p>

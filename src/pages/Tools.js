@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaSearch, FaTerminal, FaShieldAlt, FaGlobe, FaServer, FaKey, FaNetworkWired, FaLock } from 'react-icons/fa';
+import { FaSearch, FaTerminal, FaShieldAlt, FaGlobe, FaServer, FaKey, FaNetworkWired, FaLock, FaWindows, FaFingerprint } from 'react-icons/fa';
 import NmapBuilder from '../components/CommandBuilders/NmapBuilder';
 import MetasploitBuilder from '../components/CommandBuilders/MetasploitBuilder';
 import SqlmapBuilder from '../components/CommandBuilders/SqlmapBuilder';
@@ -8,8 +8,15 @@ import HydraBuilder from '../components/CommandBuilders/HydraBuilder';
 import BurpSuiteBuilder from '../components/CommandBuilders/BurpSuiteBuilder';
 import WiresharkBuilder from '../components/CommandBuilders/WiresharkBuilder';
 import JohnTheRipperBuilder from '../components/CommandBuilders/JohnTheRipperBuilder';
+import HashcatBuilder from '../components/CommandBuilders/HashcatBuilder';
 import AnimatedCard from '../components/UI/AnimatedCard';
 import GradientHeader from '../components/UI/GradientHeader';
+import NetcatBuilder from '../components/CommandBuilders/NetcatBuilder';
+import PowerShellBuilder from '../components/CommandBuilders/PowerShellBuilder';
+import OSINTQuickRef from '../components/CommandBuilders/OSINTQuickRef';
+import IRChecklist from '../components/CommandBuilders/IRChecklist';
+import Enum4linuxBuilder from '../components/CommandBuilders/Enum4linuxBuilder';
+import HashIdentifier from '../components/CommandBuilders/HashIdentifier';
 
 const Tools = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -62,7 +69,56 @@ const Tools = () => {
       id: 'john', 
       name: 'John the Ripper', 
       icon: <FaLock />, 
-      component: <JohnTheRipperBuilder />,
+      component: <JohnTheRipperBuilder />, 
+      category: 'Password' 
+    },
+    {
+      id: 'hashcat',
+      name: 'Hashcat',
+      icon: <FaKey />,
+      component: <HashcatBuilder />,
+      category: 'Password'
+    },
+    {
+      id: 'netcat',
+      name: 'Netcat',
+      icon: <FaNetworkWired />,
+      component: <NetcatBuilder />,
+      category: 'Network'
+    },
+    {
+      id: 'powershell',
+      name: 'PowerShell',
+      icon: <FaWindows />,
+      component: <PowerShellBuilder />,
+      category: 'Windows'
+    },
+    {
+      id: 'osint',
+      name: 'OSINT Quick Ref',
+      icon: <FaGlobe />,
+      component: <OSINTQuickRef />,
+      category: 'Recon'
+    },
+    {
+      id: 'ir',
+      name: 'IR Checklist',
+      icon: <FaShieldAlt />,
+      component: <IRChecklist />,
+      category: 'Incident Response'
+    },
+    {
+      id: 'enum4linux',
+      name: 'Enum4linux',
+      icon: <FaServer />,
+      component: <Enum4linuxBuilder />,
+      category: 'Enumeration'
+    },
+    {
+      id: 'hashid',
+      name: 'Hash Identifier',
+      icon: <FaFingerprint />,
+      component: <HashIdentifier />,
       category: 'Password'
     }
   ];
