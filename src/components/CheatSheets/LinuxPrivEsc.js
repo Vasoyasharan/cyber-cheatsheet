@@ -19,6 +19,65 @@ const LinuxPrivEsc = () => {
 
   const sections = [
     {
+      id: 'walkthrough',
+      title: 'Guided Privilege Escalation Walkthrough',
+      content: [
+        {
+          type: 'markdown',
+          value: `Follow this step-by-step chain to escalate privileges on a Linux system. Expand each step for details and commands.`
+        },
+        {
+          type: 'step',
+          title: '1. System & User Recon',
+          description: 'Gather basic system and user info to identify potential attack vectors.',
+          commands: [
+            { value: 'uname -a', description: 'Kernel version and architecture' },
+            { value: 'id', description: 'Current user and groups' },
+            { value: 'sudo -l', description: 'Check sudo privileges' }
+          ]
+        },
+        {
+          type: 'markdown',
+          value: '**Tip:** After each step, re-check your privileges with `id` and `whoami`. Document your findings!'
+        },
+        {
+          type: 'step',
+          title: '2. Find SUID/SGID Binaries',
+          description: 'Look for binaries with elevated privileges that can be exploited.',
+          commands: [
+            { value: 'find / -perm -u=s -type f 2>/dev/null', description: 'Find SUID binaries' },
+            { value: 'find / -perm -g=s -type f 2>/dev/null', description: 'Find SGID binaries' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '3. Check for Writable Files & Misconfigs',
+          description: 'Identify files and configs that can be abused for privilege escalation.',
+          commands: [
+            { value: 'find / -writable -type d 2>/dev/null', description: 'World-writable directories' },
+            { value: 'ls -l /etc/passwd', description: 'Check if /etc/passwd is writable' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '4. Kernel Exploit Check',
+          description: 'Determine if the kernel is vulnerable to public exploits.',
+          commands: [
+            { value: 'uname -r', description: 'Get kernel version' },
+            { value: 'searchsploit kernel <version>', description: 'Search for kernel exploits' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '5. Exploit & Escalate',
+          description: 'Use a discovered vector to gain root. Example: Exploit a writable SUID binary or kernel vuln.',
+          commands: [
+            { value: './exploit', description: 'Run exploit (replace with actual exploit binary)' }
+          ]
+        }
+      ]
+    },
+    {
       id: 'enumeration',
       title: 'System Enumeration',
       content: [
@@ -207,30 +266,64 @@ sh -c "echo \\\$\\\$ > /tmp/cgrp/x/cgroup.procs"
             >
               {expandedSection === section.id && (
                 <div className="content-inner">
-                  {section.content.map((item, index) => (
-                    <div key={index} className="content-item">
-                      {item.type === 'command' ? (
-                        <div className="command-item">
-                          <div className="command-header">
-                            <code>{item.value}</code>
-                            <button
-                              onClick={() => handleCopy(item.value)}
-                              className="copy-button small"
-                            >
-                              Copy
-                            </button>
+                  {section.content.map((item, index) => {
+                    if (item.type === 'command') {
+                      return (
+                        <div key={index} className="content-item">
+                          <div className="command-item">
+                            <div className="command-header">
+                              <code>{item.value}</code>
+                              <button
+                                onClick={() => handleCopy(item.value)}
+                                className="copy-button small"
+                              >
+                                Copy
+                              </button>
+                            </div>
+                            <p className="command-description">{item.description}</p>
                           </div>
-                          <p className="command-description">{item.description}</p>
                         </div>
-                      ) : (
-                        <div className="markdown-content">
-                          <ReactMarkdown>
-                            {item.value}
-                          </ReactMarkdown>
+                      );
+                    } else if (item.type === 'markdown') {
+                      return (
+                        <div key={index} className="content-item">
+                          <div className="markdown-content">
+                            <ReactMarkdown>
+                              {item.value}
+                            </ReactMarkdown>
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  ))}
+                      );
+                    } else if (item.type === 'step') {
+                      // Render step with title, description, and commands
+                      return (
+                        <div key={index} className="content-item walkthrough-step">
+                          <div className="step-header">
+                            <strong>{item.title}</strong>
+                          </div>
+                          <div className="step-description">{item.description}</div>
+                          <div className="step-commands">
+                            {item.commands.map((cmd, i) => (
+                              <div key={i} className="command-item">
+                                <div className="command-header">
+                                  <code>{cmd.value}</code>
+                                  <button
+                                    onClick={() => handleCopy(cmd.value)}
+                                    className="copy-button small"
+                                  >
+                                    Copy
+                                  </button>
+                                </div>
+                                <p className="command-description">{cmd.description}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    } else {
+                      return null;
+                    }
+                  })}
                 </div>
               )}
             </motion.div>
