@@ -23,39 +23,45 @@ const LinuxPrivEsc = () => {
       title: 'System Enumeration',
       content: [
         {
-          type: 'command',
-          value: 'uname -a',
-          description: 'Kernel version and system architecture'
+          type: 'markdown',
+          value: `#### Basic System Info\nUse these to get a quick overview of the system:`
         },
-        {
-          type: 'command',
-          value: 'cat /etc/*-release',
-          description: 'Distribution version information'
-        },
-        {
-          type: 'command',
-          value: 'lscpu',
-          description: 'CPU architecture information'
-        },
-        {
-          type: 'command',
-          value: 'lsblk -f',
-          description: 'Block devices and filesystems'
-        },
-        {
-          type: 'command',
-          value: 'df -h',
-          description: 'Disk space usage'
-        },
+        { type: 'command', value: 'uname -a', description: 'Kernel version and system architecture' },
+        { type: 'command', value: 'cat /etc/*-release', description: 'Distribution version information' },
+        { type: 'command', value: 'hostnamectl', description: 'Hostname and OS details' },
+        { type: 'command', value: 'lscpu', description: 'CPU architecture information' },
+        { type: 'command', value: 'lsblk -f', description: 'Block devices and filesystems' },
+        { type: 'command', value: 'df -h', description: 'Disk space usage' },
         {
           type: 'markdown',
-          value: `### Advanced Enumeration
-- **Processes**: \`ps auxfww\` (Detailed process tree)
-- **Network**: \`ss -tulnp\` (All listening ports with processes)
-- **Cron Jobs**: \`ls -la /etc/cron* /var/spool/cron/crontabs\`
-- **Services**: \`systemctl list-units --type=service --state=running\`
-- **Capabilities**: \`getcap -r / 2>/dev/null\`
-- **Sudo Rules**: \`sudo -l\` (Check sudo privileges)`
+          value: `#### User & Privilege Info\nFind out who you are and what you can do:`
+        },
+        { type: 'command', value: 'id', description: 'Current user and groups' },
+        { type: 'command', value: 'whoami', description: 'Current username' },
+        { type: 'command', value: 'sudo -l', description: 'List sudo privileges (try without password)' },
+        { type: 'command', value: 'groups', description: 'Groups for current user' },
+        {
+          type: 'markdown',
+          value: `#### Interesting Files & Permissions\nLook for sensitive files and misconfigurations:`
+        },
+        { type: 'command', value: 'find / -type f -name "*.bak" -o -name "*.old" -o -name "*.swp" 2>/dev/null', description: 'Find backup, old, and swap files (may contain creds)' },
+        { type: 'command', value: 'find / -writable -type d 2>/dev/null', description: 'Find world-writable directories' },
+        { type: 'command', value: 'find / -perm -u=s -type f 2>/dev/null', description: 'Find all SUID binaries (potential privesc)' },
+        { type: 'command', value: 'getcap -r / 2>/dev/null', description: 'Find files with Linux capabilities set' },
+        {
+          type: 'markdown',
+          value: `#### Advanced Enumeration\nDeeper checks for privilege escalation vectors:`
+        },
+        { type: 'command', value: 'ps auxfww', description: 'Detailed process tree' },
+        { type: 'command', value: 'ss -tulnp', description: 'All listening ports with processes' },
+        { type: 'command', value: 'ls -la /etc/cron* /var/spool/cron/crontabs', description: 'List cron jobs' },
+        { type: 'command', value: 'systemctl list-units --type=service --state=running', description: 'Running services' },
+        { type: 'command', value: 'grep -iE "docker|lxc" /proc/1/cgroup', description: 'Check for Docker/LXC/containerization' },
+        { type: 'command', value: 'find / -perm /6000 -type f 2>/dev/null', description: 'Unusual setuid/setgid files' },
+        { type: 'command', value: 'ls -l /etc/passwd', description: 'Check if /etc/passwd is writable' },
+        {
+          type: 'markdown',
+          value: `**Tip:** Use [LinPEAS](https://github.com/carlospolop/PEASS-ng/tree/master/linPEAS) or [LES](https://github.com/mzet-/linux-exploit-suggester) for automated enumeration.`
         }
       ]
     },

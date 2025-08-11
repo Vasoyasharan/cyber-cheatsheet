@@ -31,9 +31,19 @@ const NmapBuilder = () => {
     { label: 'UDP Scan', command: 'nmap -sU <target>' },
     { label: 'Vuln Scan', command: 'nmap --script vuln <target>' },
   ];
+  // Replace <target> in example with the current target value
   const handleExample = (cmd) => {
     setExample(cmd);
     toast.info('Example loaded! Edit as needed.', { position: 'bottom-right', autoClose: 1500, hideProgressBar: true });
+  };
+
+  // Helper to substitute <target> in example or generated command
+  const substituteTarget = (cmd) => {
+    if (!cmd) return '';
+    if (cmd.includes('<target>')) {
+      return target ? cmd.replace(/<target>/g, target) : cmd.replace(/<target>/g, '[target]');
+    }
+    return cmd;
   };
 
   const handleReset = () => {
@@ -99,8 +109,11 @@ const NmapBuilder = () => {
   };
 
   const buildCommand = () => {
+    if (example) {
+      // If an example is loaded, substitute <target>
+      return substituteTarget(example);
+    }
     let cmd = `nmap -${scanType}`;
-    
     if (target) cmd += ` ${target}`;
     if (options.portRange) cmd += ` -p ${options.portRange}`;
     if (options.verbose) cmd += ' -v';
@@ -109,16 +122,15 @@ const NmapBuilder = () => {
     if (options.timing) cmd += ` -${options.timing}`;
     if (options.output) cmd += ` -oN ${options.output}`;
     if (options.script) cmd += ` --script ${options.script}`;
-    
     return cmd;
   };
 
   const handleCopy = async () => {
     if (target && !validateTarget(target)) return;
-    
+    const cmd = buildCommand();
     try {
-      await copyToClipboard(buildCommand());
-      addToHistory(buildCommand());
+      await copyToClipboard(cmd);
+      addToHistory(cmd);
       toast.success('Command copied to clipboard!', {
         position: 'bottom-right',
         autoClose: 2000,
@@ -176,12 +188,13 @@ const NmapBuilder = () => {
         <select className="select-input" value={example} onChange={e => handleExample(e.target.value)}>
           <option value="">-- Select Example --</option>
           {scanExamples.map(ex => (
-            <option key={ex.label} value={ex.command}>{ex.label}</option>
+            <option key={ex.label} value={ex.command}>{ex.label} ({ex.command})</option>
           ))}
         </select>
         {example && (
           <div className="description" style={{marginTop: '0.5rem'}}>
-            <code>{example}</code>
+            <div style={{fontSize: '0.95em', color: '#aaa', marginBottom: 2}}>Preview with your target:</div>
+            <code>{target ? substituteTarget(example) : 'Enter a target above to preview the full command.'}</code>
           </div>
         )}
       </div>
@@ -293,7 +306,7 @@ const NmapBuilder = () => {
             <FaCopy /> Copy
           </button>
         </div>
-        <code>{example ? example : buildCommand()}</code>
+        <code>{buildCommand()}</code>
       </div>
 
       <CommandHistory />
