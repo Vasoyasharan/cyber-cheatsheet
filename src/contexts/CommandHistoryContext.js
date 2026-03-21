@@ -22,12 +22,16 @@ export const CommandHistoryProvider = ({ children }) => {
     });
   };
 
+  const removeCommand = (index) => {
+    setHistory(prev => prev.filter((_, i) => i !== index));
+  };
+
   const clearHistory = () => {
     setHistory([]);
   };
 
   return (
-    <CommandHistoryContext.Provider value={{ history, addToHistory, clearHistory }}>
+    <CommandHistoryContext.Provider value={{ history, addToHistory, removeCommand, clearHistory }}>
       {children}
     </CommandHistoryContext.Provider>
   );
