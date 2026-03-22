@@ -16,14 +16,14 @@ export const CommandHistoryProvider = ({ children }) => {
 
   const addToHistory = (command) => {
     setHistory(prev => {
-      // Avoid duplicates and keep only the last 10 commands
-      const newHistory = [command, ...prev.filter(cmd => cmd !== command)].slice(0, 10);
+      // Avoid duplicates and keep only the last 20 commands
+      const newHistory = [command, ...prev.filter(cmd => cmd !== command)].slice(0, 20);
       return newHistory;
     });
   };
 
-  const removeCommand = (index) => {
-    setHistory(prev => prev.filter((_, i) => i !== index));
+  const removeCommand = (commandToRemove) => {
+    setHistory(prev => prev.filter(cmd => cmd !== commandToRemove));
   };
 
   const clearHistory = () => {
