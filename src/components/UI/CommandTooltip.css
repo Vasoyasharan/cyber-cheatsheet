@@ -1,0 +1,117 @@
+/* Command Tooltip Styles */
+
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: help;
+}
+
+.info-icon {
+  font-size: 12px;
+  color: var(--accent-color, #6e48aa);
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.tooltip-trigger:hover .info-icon {
+  opacity: 1;
+}
+
+.tooltip-content {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.tooltip-arrow {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid var(--bg-tooltip, #2c2c2c);
+}
+
+.tooltip-body {
+  background: var(--bg-tooltip, #2c2c2c);
+  color: var(--text-tooltip, #fff);
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  max-width: 280px;
+  line-height: 1.5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.tooltip-flag {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--accent-light, #9d72c7);
+  font-family: 'Courier New', monospace;
+}
+
+.tooltip-text {
+  margin: 0;
+}
+
+/* Light Mode */
+.light .tooltip-body {
+  background: #333;
+  color: #fff;
+  border: 1px solid #444;
+}
+
+.light .tooltip-arrow {
+  border-top-color: #333;
+}
+
+/* Dark Mode */
+.dark .tooltip-body {
+  background: #3a3a3a;
+  color: #e0e0e0;
+  border: 1px solid #555;
+}
+
+.dark .tooltip-arrow {
+  border-top-color: #3a3a3a;
+}
+
+.dark .tooltip-flag {
+  color: #a0d4ff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tooltip-body {
+    max-width: 200px;
+    font-size: 12px;
+  }
+}
+
+/* Keyboard accessible - show on focus */
+.tooltip-trigger:focus-within {
+  .info-icon {
+    opacity: 1;
+  }
+}
+
+.tooltip-trigger:focus-within ~ .tooltip-content {
+  display: block;
+}

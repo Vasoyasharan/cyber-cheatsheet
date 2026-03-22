@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FaNetworkWired, FaCopy, FaInfoCircle } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import { useCommandHistory } from '../../contexts/CommandHistoryContext';
 import { copyToClipboard } from '../../utils/copyToClipboard';
 
 const NetcatBuilder = () => {
@@ -8,6 +9,7 @@ const NetcatBuilder = () => {
   const [host, setHost] = useState('');
   const [port, setPort] = useState('');
   const [extra, setExtra] = useState('');
+  const { addToHistory } = useCommandHistory();
 
   const buildCommand = () => {
     if (mode === 'listen') return `nc -lvnp ${port} ${extra}`.trim();
@@ -18,7 +20,9 @@ const NetcatBuilder = () => {
 
   const handleCopy = async () => {
     try {
-      await copyToClipboard(buildCommand());
+      const cmd = buildCommand();
+      await copyToClipboard(cmd);
+      addToHistory(cmd);
       toast.success('Command copied!', { position: 'bottom-right', autoClose: 2000, hideProgressBar: true });
     } catch {
       toast.error('Failed to copy', { position: 'bottom-right', autoClose: 2000, hideProgressBar: true });

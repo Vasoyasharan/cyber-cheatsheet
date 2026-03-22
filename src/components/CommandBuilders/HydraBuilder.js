@@ -5,7 +5,6 @@ import { toast } from 'react-toastify';
 import { useCommandHistory } from '../../contexts/CommandHistoryContext';
 import { validateIpAddress, sanitizeInput } from '../../utils/commandHelpers';
 import { copyToClipboard } from '../../utils/copyToClipboard';
-import CommandHistory from '../UI/CommandHistory';
 
 const HydraBuilder = () => {
   const [service, setService] = useState('ssh');
@@ -93,8 +92,9 @@ const HydraBuilder = () => {
     }
 
     try {
-      await copyToClipboard(buildCommand());
-      addToHistory(buildCommand());
+      const cmd = buildCommand();
+      await copyToClipboard(cmd);
+      addToHistory(cmd);
       toast.success('Command copied to clipboard!', {
         position: 'bottom-right',
         autoClose: 2000,
@@ -302,8 +302,7 @@ const HydraBuilder = () => {
         )}
       </div>
       
-      <CommandHistory />
-      
+
       <div className="info-tip warning">
         <FaInfoCircle />
         <p>Warning: Brute-forcing credentials without authorization is illegal. Use only on systems you own or have permission to test.</p>

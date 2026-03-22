@@ -3,10 +3,12 @@ import { motion } from 'framer-motion';
 import { FaChevronDown, FaUserSecret, FaInfoCircle } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
 import { copyToClipboard } from '../../utils/copyToClipboard';
+import { useCommandHistory } from '../../contexts/CommandHistoryContext';
 import { toast } from 'react-toastify';
 
 const InitialAccessTechniques = () => {
-  const [expandedSection, setExpandedSection] = useState('phishing');
+  const [expandedSection, setExpandedSection] = useState(null);
+  const { addToHistory } = useCommandHistory();
 
   const toggleSection = (section) => {
     setExpandedSection(expandedSection === section ? null : section);
@@ -14,6 +16,7 @@ const InitialAccessTechniques = () => {
 
   const handleCopy = (command) => {
     copyToClipboard(command);
+    addToHistory(command);
     toast.success('Command copied to clipboard!');
   };
 

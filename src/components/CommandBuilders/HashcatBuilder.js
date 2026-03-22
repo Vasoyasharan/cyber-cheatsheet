@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FaKey, FaCopy, FaInfoCircle } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import { useCommandHistory } from '../../contexts/CommandHistoryContext';
 import { copyToClipboard } from '../../utils/copyToClipboard';
 
 const hashTypes = [
@@ -26,6 +27,7 @@ const HashcatBuilder = () => {
   const [wordlist, setWordlist] = useState('');
   const [mask, setMask] = useState('');
   const [extra, setExtra] = useState('');
+  const { addToHistory } = useCommandHistory();
 
   const buildCommand = () => {
     let cmd = `hashcat -m ${hashType} -a ${attackMode}`;
@@ -38,7 +40,9 @@ const HashcatBuilder = () => {
 
   const handleCopy = async () => {
     try {
-      await copyToClipboard(buildCommand());
+      const cmd = buildCommand();
+      await copyToClipboard(cmd);
+      addToHistory(cmd);
       toast.success('Command copied to clipboard!', { position: 'bottom-right', autoClose: 2000, hideProgressBar: true });
     } catch {
       toast.error('Failed to copy command', { position: 'bottom-right', autoClose: 2000, hideProgressBar: true });

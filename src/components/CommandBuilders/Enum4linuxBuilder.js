@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { FaServer, FaCopy, FaInfoCircle } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import { useCommandHistory } from '../../contexts/CommandHistoryContext';
 import { copyToClipboard } from '../../utils/copyToClipboard';
 
 const Enum4linuxBuilder = () => {
   const [target, setTarget] = useState('');
   const [options, setOptions] = useState({ a: true, u: '', p: '', r: false, s: false });
+  const { addToHistory } = useCommandHistory();
 
   const buildCommand = () => {
     let cmd = 'enum4linux';
@@ -20,7 +22,9 @@ const Enum4linuxBuilder = () => {
 
   const handleCopy = async () => {
     try {
-      await copyToClipboard(buildCommand());
+      const cmd = buildCommand();
+      await copyToClipboard(cmd);
+      addToHistory(cmd);
       toast.success('Copied!', { position: 'bottom-right', autoClose: 2000, hideProgressBar: true });
     } catch {
       toast.error('Failed to copy', { position: 'bottom-right', autoClose: 2000, hideProgressBar: true });

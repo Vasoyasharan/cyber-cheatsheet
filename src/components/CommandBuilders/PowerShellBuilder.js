@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { FaWindows, FaCopy, FaInfoCircle } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import { useCommandHistory } from '../../contexts/CommandHistoryContext';
 import { copyToClipboard } from '../../utils/copyToClipboard';
 
 const PowerShellBuilder = () => {
   const [snippet, setSnippet] = useState('whoami');
   const [custom, setCustom] = useState('');
+  const { addToHistory } = useCommandHistory();
 
   const snippets = [
     { label: 'Current User', value: 'whoami' },
@@ -20,7 +22,9 @@ const PowerShellBuilder = () => {
 
   const handleCopy = async () => {
     try {
-      await copyToClipboard(buildCommand());
+      const cmd = buildCommand();
+      await copyToClipboard(cmd);
+      addToHistory(cmd);
       toast.success('Copied!', { position: 'bottom-right', autoClose: 2000, hideProgressBar: true });
     } catch {
       toast.error('Failed to copy', { position: 'bottom-right', autoClose: 2000, hideProgressBar: true });

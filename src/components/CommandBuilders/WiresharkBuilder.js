@@ -4,7 +4,6 @@ import { FaCopy, FaInfoCircle, FaNetworkWired } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { useCommandHistory } from '../../contexts/CommandHistoryContext';
 import { copyToClipboard } from '../../utils/copyToClipboard';
-import CommandHistory from '../UI/CommandHistory';
 
 const WiresharkBuilder = () => {
   const [captureOptions, setCaptureOptions] = useState({
@@ -71,8 +70,9 @@ const WiresharkBuilder = () => {
     }
 
     try {
-      await copyToClipboard(buildCommand());
-      addToHistory(buildCommand());
+      const cmd = buildCommand();
+      await copyToClipboard(cmd);
+      addToHistory(cmd);
       toast.success('Command copied to clipboard!', {
         position: 'bottom-right',
         autoClose: 2000,
@@ -225,8 +225,7 @@ const WiresharkBuilder = () => {
         <code>{buildCommand()}</code>
       </div>
       
-      <CommandHistory />
-      
+
       <div className="info-tip warning">
         <FaInfoCircle />
         <p>Warning: Capturing network traffic may be subject to legal restrictions. Only capture traffic you are authorized to monitor.</p>

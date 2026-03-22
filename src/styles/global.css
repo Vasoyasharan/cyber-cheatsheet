@@ -930,6 +930,43 @@ pre code {
   background: white;
 }
 
+/* Search Button */
+.nav-search-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(109, 72, 170, 0.2);
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.nav-search-btn:hover {
+  box-shadow: 0 6px 20px rgba(109, 72, 170, 0.3);
+  transform: translateY(-2px);
+}
+
+.nav-search-btn:active {
+  transform: translateY(0);
+}
+
+.search-text {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .search-text {
+    display: inline;
+  }
+}
+
 /* Footer styles */
 .footer {
   background: linear-gradient(135deg, var(--card-bg) 0%, rgba(109, 72, 170, 0.05) 100%);
@@ -1572,6 +1609,14 @@ pre code {
   .nav-text {
     display: none;
   }
+  
+  .nav-search-btn {
+    padding: 0.65rem 1rem;
+  }
+
+  .search-text {
+    display: none;
+  };
   
   .gradient-header {
     padding: 2.5rem 1rem;

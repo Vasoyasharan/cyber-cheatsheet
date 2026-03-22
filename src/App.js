@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Tools from './pages/Tools';
 import CheatSheets from './pages/CheatSheets';
 import About from './pages/About';
+import Utilities from './pages/Utilities';
 import './styles/global.css';
 import './styles/animations.css';
 import './styles/themes.css';
@@ -20,6 +21,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/tools" element={<Tools />} />
               <Route path="/cheatsheets" element={<CheatSheets />} />
+              <Route path="/utilities" element={<Utilities />} />
               <Route path="/about" element={<About />} />
             </Routes>
           </Layout>
