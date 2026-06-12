@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { FaSearch, FaTerminal, FaShieldAlt, FaGlobe, FaServer, FaKey, FaNetworkWired, FaLock, FaWindows, FaFingerprint, FaTimes, FaFilter } from 'react-icons/fa';
+import { FaSearch, FaTerminal, FaShieldAlt, FaGlobe, FaServer, FaKey, FaNetworkWired, FaLock, FaWindows, FaFingerprint, FaTimes, FaFilter, FaFolderOpen, FaBolt, FaDatabase, FaWifi } from 'react-icons/fa';
 import NmapBuilder from '../components/CommandBuilders/NmapBuilder';
 import MetasploitBuilder from '../components/CommandBuilders/MetasploitBuilder';
 import SqlmapBuilder from '../components/CommandBuilders/SqlmapBuilder';
@@ -18,12 +18,46 @@ import OSINTQuickRef from '../components/CommandBuilders/OSINTQuickRef';
 import IRChecklist from '../components/CommandBuilders/IRChecklist';
 import Enum4linuxBuilder from '../components/CommandBuilders/Enum4linuxBuilder';
 import HashIdentifier from '../components/CommandBuilders/HashIdentifier';
+import DimitryBuilder from '../components/CommandBuilders/DimitryBuilder';
+import GobusterBuilder from '../components/CommandBuilders/GobusterBuilder';
+import NiktoBuilder from '../components/CommandBuilders/NiktoBuilder';
+import FfufBuilder from '../components/CommandBuilders/FfufBuilder';
+import TheHarvesterBuilder from '../components/CommandBuilders/TheHarvesterBuilder';
+import AircrackBuilder from '../components/CommandBuilders/AircrackBuilder';
+import CrackMapExecBuilder from '../components/CommandBuilders/CrackMapExecBuilder';
+import RecentlyViewedBar from '../components/UI/RecentlyViewedBar';
+import { useRecentlyViewed } from '../contexts/RecentlyViewedContext';
 
 const Tools = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeTool, setActiveTool] = useState('nmap');
+  const [activeTool, setActiveTool] = useState(null);
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const detailRef = useRef(null);
+  const { recentTools, addRecentTool } = useRecentlyViewed();
+
+  const handleSelectTool = useCallback((id, toolObj) => {
+    const next = activeTool === id ? null : id;
+    setActiveTool(next);
+    if (next && toolObj) {
+      addRecentTool({ id: toolObj.id, name: toolObj.name, icon: toolObj.name.slice(0, 2) });
+    }
+  }, [activeTool, addRecentTool]);
+
+  useEffect(() => {
+    if (activeTool && detailRef.current) {
+      setTimeout(() => {
+        detailRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [activeTool]);
+
+  // Esc key closes active tool
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') setActiveTool(null); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   const tools = [
     { 
@@ -151,6 +185,69 @@ const Tools = () => {
       category: 'Exploitation',
       difficulty: 'advanced',
       description: 'Exploitation framework - orchestrate complex attacks'
+    },
+    {
+      id: 'dimitry',
+      name: 'Dmitry',
+      icon: <FaSearch />,
+      component: <DimitryBuilder />,
+      category: 'Recon',
+      difficulty: 'beginner',
+      description: 'Deepmagic Info Gathering Tool — whois, emails, subdomains'
+    },
+    {
+      id: 'gobuster',
+      name: 'Gobuster',
+      icon: <FaFolderOpen />,
+      component: <GobusterBuilder />,
+      category: 'Web',
+      difficulty: 'intermediate',
+      description: 'Lightning-fast directory, DNS & vhost brute-force enumeration'
+    },
+    {
+      id: 'nikto',
+      name: 'Nikto',
+      icon: <FaGlobe />,
+      component: <NiktoBuilder />,
+      category: 'Web',
+      difficulty: 'intermediate',
+      description: 'Web server scanner - detect dangerous files & misconfigs'
+    },
+    {
+      id: 'ffuf',
+      name: 'FFuf',
+      icon: <FaBolt />,
+      component: <FfufBuilder />,
+      category: 'Web',
+      difficulty: 'intermediate',
+      description: 'Blazing-fast web fuzzer for dirs, subdomains & parameters'
+    },
+    {
+      id: 'theharvester',
+      name: 'theHarvester',
+      icon: <FaDatabase />,
+      component: <TheHarvesterBuilder />,
+      category: 'Recon',
+      difficulty: 'beginner',
+      description: 'Harvest emails, subdomains & hosts from public sources'
+    },
+    {
+      id: 'aircrack',
+      name: 'Aircrack-ng',
+      icon: <FaWifi />,
+      component: <AircrackBuilder />,
+      category: 'Wireless',
+      difficulty: 'advanced',
+      description: 'WiFi security auditing - monitor, capture & crack WPA/WPA2'
+    },
+    {
+      id: 'crackmapexec',
+      name: 'CrackMapExec',
+      icon: <FaNetworkWired />,
+      component: <CrackMapExecBuilder />,
+      category: 'Enumeration',
+      difficulty: 'advanced',
+      description: 'Swiss army knife for Active Directory & network exploitation'
     }
   ];
 
@@ -291,6 +388,18 @@ const Tools = () => {
         </div>
       </motion.div>
 
+      {/* Recently Viewed Bar */}
+      <RecentlyViewedBar
+        items={recentTools}
+        activeId={activeTool}
+        onSelect={(id) => {
+          const tool = tools.find(t => t.id === id);
+          handleSelectTool(id, tool);
+        }}
+        onClear={() => { /* clear handled in context via localStorage */ window.localStorage.setItem('recentTools', '[]'); window.location.reload(); }}
+        label="Recent tools"
+      />
+
       {/* Tools Grid */}
       <div className="tools-grid" style={{
         padding: '20px',
@@ -303,7 +412,7 @@ const Tools = () => {
         {filteredTools.map((tool, index) => (
           <AnimatedCard
             key={tool.id}
-            onClick={() => setActiveTool(tool.id)}
+            onClick={() => handleSelectTool(tool.id, tool)}
             isActive={activeTool === tool.id}
             delay={index * 0.1}
           >
@@ -312,13 +421,46 @@ const Tools = () => {
               style={{
                 padding: '20px',
                 cursor: 'pointer',
-                textAlign: 'center'
+                textAlign: 'center',
+                position: 'relative'
               }}
             >
+              {/* Active badge */}
+              {activeTool === tool.id && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.7 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    background: 'var(--primary)',
+                    color: 'white',
+                    fontSize: '10px',
+                    fontWeight: '700',
+                    padding: '3px 8px',
+                    borderRadius: '20px',
+                    letterSpacing: '0.5px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    boxShadow: '0 0 10px var(--primary)'
+                  }}
+                >
+                  <motion.span
+                    animate={{ opacity: [1, 0.3, 1] }}
+                    transition={{ duration: 1.2, repeat: Infinity }}
+                    style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'white', display: 'inline-block' }}
+                  />
+                  OPEN ▼
+                </motion.div>
+              )}
               <div className="tool-icon" style={{
                 fontSize: '40px',
                 marginBottom: '12px',
-                color: 'var(--primary)'
+                color: activeTool === tool.id ? 'var(--primary)' : 'var(--primary)',
+                filter: activeTool === tool.id ? 'drop-shadow(0 0 8px var(--primary))' : 'none',
+                transition: 'filter 0.3s'
               }}>
                 {tool.icon}
               </div>
@@ -329,8 +471,11 @@ const Tools = () => {
               <p style={{ fontSize: '13px', color: 'var(--text)', opacity: 0.8, marginBottom: '12px', lineHeight: '1.4' }}>
                 {tool.description}
               </p>
-              <div style={{ marginTop: '10px' }}>
+              <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                 <DifficultyBadge level={tool.difficulty} size="sm" />
+                {activeTool !== tool.id && (
+                  <span style={{ fontSize: '11px', opacity: 0.5, color: 'var(--text)' }}>Click to open</span>
+                )}
               </div>
             </motion.div>
           </AnimatedCard>
@@ -355,6 +500,7 @@ const Tools = () => {
       {/* Tool Details Section */}
       {activeToolData && (
         <motion.div
+          ref={detailRef}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}

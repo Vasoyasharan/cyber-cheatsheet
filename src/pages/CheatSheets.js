@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FaSearch, FaLinux, FaWindows, FaGlobe, FaUserSecret, FaCode, FaServer, FaUserShield, FaCloud, FaFilter, FaTimes, FaBook, FaShieldAlt, FaRocket, FaStar, FaClock, FaLightbulb, FaChartLine, FaLock, FaBrain, FaMobile, FaNetworkWired, FaBot, FaTools } from 'react-icons/fa';
 import LinuxPrivEsc from '../components/CheatSheets/LinuxPrivEsc';
@@ -14,14 +14,42 @@ import AnimatedCard from '../components/UI/AnimatedCard';
 import GradientHeader from '../components/UI/GradientHeader';
 import DifficultyBadge from '../components/UI/DifficultyBadge';
 import { toast } from 'react-toastify';
+import RecentlyViewedBar from '../components/UI/RecentlyViewedBar';
+import { useRecentlyViewed } from '../contexts/RecentlyViewedContext';
 
 const CheatSheets = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeSheet, setActiveSheet] = useState('linux');
+  const [activeSheet, setActiveSheet] = useState(null);
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [favorites, setFavorites] = useState([]);
   const [showAdvancedTips, setShowAdvancedTips] = useState(false);
+  const detailRef = useRef(null);
+  const { recentSheets, addRecentSheet } = useRecentlyViewed();
+
+  const handleSelectSheet = useCallback((id, sheetObj) => {
+    const next = activeSheet === id ? null : id;
+    setActiveSheet(next);
+    setShowAdvancedTips(false);
+    if (next && sheetObj) {
+      addRecentSheet({ id: sheetObj.id, name: sheetObj.name, icon: sheetObj.name.slice(0, 2) });
+    }
+  }, [activeSheet, addRecentSheet]);
+
+  useEffect(() => {
+    if (activeSheet && detailRef.current) {
+      setTimeout(() => {
+        detailRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [activeSheet]);
+
+  // Esc closes active sheet
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') setActiveSheet(null); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   const cheatSheets = [
     { 
@@ -552,6 +580,18 @@ const CheatSheets = () => {
         </motion.div>
       </motion.div>
 
+      {/* Recently Viewed Bar */}
+      <RecentlyViewedBar
+        items={recentSheets}
+        activeId={activeSheet}
+        onSelect={(id) => {
+          const sheet = cheatSheets.find(s => s.id === id);
+          handleSelectSheet(id, sheet);
+        }}
+        onClear={() => { window.localStorage.setItem('recentSheets', '[]'); window.location.reload(); }}
+        label="Recent sheets"
+      />
+
       {/* CheatSheets Grid with Enhanced Animations */}
       <motion.div
         className="cheatsheets-grid"
@@ -570,10 +610,7 @@ const CheatSheets = () => {
         {filteredSheets.map((sheet, index) => (
           <AnimatedCard
             key={sheet.id}
-            onClick={() => {
-              setActiveSheet(sheet.id);
-              setShowAdvancedTips(false);
-            }}
+            onClick={() => handleSelectSheet(sheet.id, sheet)}
             isActive={activeSheet === sheet.id}
             delay={index * 0.05}
           >
@@ -662,6 +699,35 @@ const CheatSheets = () => {
               )}
 
               <div style={{ marginTop: 'auto', position: 'relative', zIndex: 1, display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'center' }}>
+                {/* Active open badge */}
+                {activeSheet === sheet.id && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.7 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    style={{
+                      position: 'absolute',
+                      top: '-80px',
+                      right: '0px',
+                      background: sheet.color,
+                      color: 'white',
+                      fontSize: '10px',
+                      fontWeight: '700',
+                      padding: '3px 8px',
+                      borderRadius: '20px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      boxShadow: `0 0 10px ${sheet.color}88`
+                    }}
+                  >
+                    <motion.span
+                      animate={{ opacity: [1, 0.3, 1] }}
+                      transition={{ duration: 1.2, repeat: Infinity }}
+                      style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'white', display: 'inline-block' }}
+                    />
+                    OPEN ▼
+                  </motion.div>
+                )}
                 <DifficultyBadge level={sheet.difficulty} size="sm" />
                 <motion.button
                   onClick={(e) => {
@@ -706,6 +772,7 @@ const CheatSheets = () => {
       {/* CheatSheet Details Section */}
       {activeSheetData && (
         <motion.div
+          ref={detailRef}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, type: 'spring', stiffness: 300 }}
