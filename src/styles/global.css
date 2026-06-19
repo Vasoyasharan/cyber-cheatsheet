@@ -1,52 +1,156 @@
 /* Base styles */
 :root {
-  --primary: #6e48aa;
-  --primary-dark: #4a2d7a;
-  --secondary: #9d50bb;
-  --accent: #4776e6;
-  --text: #333;
-  --text-light: #666;
-  --text-lighter: #999;
-  --bg: #f5f5f5;
-  --card-bg: #fff;
-  --border: #e1e1e1;
-  --success: #4caf50;
-  --warning: #ff9800;
-  --danger: #f44336;
-  --info: #2196f3;
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --primary: #7c3aed;
+  --primary-dark: #5b21b6;
+  --primary-light: #a78bfa;
+  --secondary: #0ea5e9;
+  --accent: #f59e0b;
+  --accent2: #10b981;
+  --text: #0f172a;
+  --text-light: #475569;
+  --text-lighter: #94a3b8;
+  --bg: #f1f5f9;
+  --bg2: #e2e8f0;
+  --card-bg: rgba(255,255,255,0.85);
+  --card-bg-solid: #ffffff;
+  --glass-bg: rgba(255,255,255,0.6);
+  --glass-border: rgba(124,58,237,0.2);
+  --border: #e2e8f0;
+  --border-strong: rgba(124,58,237,0.35);
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #0ea5e9;
+  --shadow: 0 4px 24px rgba(124,58,237,0.12);
+  --shadow-lg: 0 12px 48px rgba(124,58,237,0.18);
+  --glow: 0 0 20px rgba(124,58,237,0.3);
+  --glow-strong: 0 0 40px rgba(124,58,237,0.5);
+  --code-bg: #1e1b4b;
+  --gradient-primary: linear-gradient(135deg, #7c3aed 0%, #0ea5e9 100%);
+  --gradient-card: linear-gradient(135deg, rgba(124,58,237,0.08) 0%, rgba(14,165,233,0.04) 100%);
 }
 
 [data-theme="dark"] {
-  --primary: #9d50bb;
-  --primary-dark: #6e48aa;
-  --secondary: #4776e6;
-  --accent: #4a2d7a;
-  --text: #f5f5f5;
-  --text-light: #ccc;
-  --text-lighter: #999;
-  --bg: #121212;
-  --card-bg: #1e1e1e;
-  --border: #333;
-  --success: #81c784;
-  --warning: #ffb74d;
-  --danger: #e57373;
-  --info: #64b5f6;
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --primary: #a78bfa;
+  --primary-dark: #7c3aed;
+  --primary-light: #c4b5fd;
+  --secondary: #38bdf8;
+  --accent: #fbbf24;
+  --accent2: #34d399;
+  --text: #f1f5f9;
+  --text-light: #cbd5e1;
+  --text-lighter: #64748b;
+  --bg: #0d0d14;
+  --bg2: #12121e;
+  --card-bg: rgba(26,26,46,0.9);
+  --card-bg-solid: #1a1a2e;
+  --glass-bg: rgba(26,26,46,0.7);
+  --glass-border: rgba(167,139,250,0.2);
+  --border: #1e1e38;
+  --border-strong: rgba(167,139,250,0.4);
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --info: #38bdf8;
+  --shadow: 0 4px 24px rgba(0,0,0,0.5);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.7);
+  --glow: 0 0 20px rgba(167,139,250,0.35);
+  --glow-strong: 0 0 40px rgba(167,139,250,0.6), 0 0 80px rgba(167,139,250,0.2);
+  --code-bg: #0d0d14;
+  --gradient-primary: linear-gradient(135deg, #a78bfa 0%, #38bdf8 100%);
+  --gradient-card: linear-gradient(135deg, rgba(167,139,250,0.08) 0%, rgba(56,189,248,0.04) 100%);
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
   background-color: var(--bg);
   color: var(--text);
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code, pre, .command-text, .text-input.mono {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+/* ── Glassmorphism Card ─────────────────────── */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+/* ── Gradient Border Card ───────────────────── */
+.gradient-border-card {
+  position: relative;
+  border-radius: 16px;
+  background: var(--card-bg);
+}
+.gradient-border-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 1.5px;
+  background: var(--gradient-primary);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.gradient-border-card:hover::before { opacity: 1; }
+
+/* ── Neon Glow Text ─────────────────────────── */
+.glow-text {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Cyber Badge ────────────────────────────── */
+.cyber-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background: var(--gradient-primary);
+  color: white;
+}
+
+/* ── Pulse Animation ────────────────────────── */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: var(--glow); }
+  50% { box-shadow: var(--glow-strong); }
+}
+
+/* ── Gradient Animated Border ───────────────── */
+@keyframes border-spin {
+  to { --angle: 360deg; }
+}
+
+/* ── Page Hero gradient bg ──────────────────── */
+.page-hero-bg {
+  background: var(--gradient-hero, var(--gradient-card));
+  border-radius: 20px;
+  margin-bottom: 24px;
 }
 
 .app-container {

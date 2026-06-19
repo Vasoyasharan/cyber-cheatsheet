@@ -5,7 +5,7 @@ import Footer from './UI/Footer';
 import ThemeToggle from './ThemeToggle';
 import { motion } from 'framer-motion';
 import CommandHistory from './UI/CommandHistory';
-import BackToTop from './UI/BackToTop';
+
 import KeyboardShortcuts from './UI/KeyboardShortcuts';
 
 const Layout = ({ children }) => {
@@ -16,7 +16,7 @@ const Layout = ({ children }) => {
       <Navbar />
       <ThemeToggle />
       <CommandHistory />
-      <BackToTop />
+
       <KeyboardShortcuts onToggleTheme={toggleTheme} />
       <motion.main
         initial={{ opacity: 0 }}
