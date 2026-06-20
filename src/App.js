@@ -1,7 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { CommandHistoryProvider } from './contexts/CommandHistoryContext';
 import { RecentlyViewedProvider } from './contexts/RecentlyViewedContext';
+import { SidebarProvider } from './contexts/SidebarContext';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Tools from './pages/Tools';
@@ -18,28 +20,40 @@ import './styles/global.css';
 import './styles/animations.css';
 import './styles/themes.css';
 
+// Scrolls to top on every route change
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   return (
     <ThemeProvider>
       <CommandHistoryProvider>
         <RecentlyViewedProvider>
-          <Router>
-            <Layout>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/tools" element={<Tools />} />
-                <Route path="/cheatsheets" element={<CheatSheets />} />
-                <Route path="/utilities" element={<Utilities />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/learning" element={<LearningPaths />} />
-                <Route path="/explainer" element={<CommandExplainer />} />
-                <Route path="/glossary" element={<Glossary />} />
-                <Route path="/payloads" element={<PayloadLibrary />} />
-                <Route path="/ports" element={<PortReference />} />
-                <Route path="/cve" element={<CVELookup />} />
-              </Routes>
-            </Layout>
-          </Router>
+          <SidebarProvider>
+            <Router>
+              <ScrollToTop />
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/tools" element={<Tools />} />
+                  <Route path="/cheatsheets" element={<CheatSheets />} />
+                  <Route path="/utilities" element={<Utilities />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/learning" element={<LearningPaths />} />
+                  <Route path="/explainer" element={<CommandExplainer />} />
+                  <Route path="/glossary" element={<Glossary />} />
+                  <Route path="/payloads" element={<PayloadLibrary />} />
+                  <Route path="/ports" element={<PortReference />} />
+                  <Route path="/cve" element={<CVELookup />} />
+                </Routes>
+              </Layout>
+            </Router>
+          </SidebarProvider>
         </RecentlyViewedProvider>
       </CommandHistoryProvider>
     </ThemeProvider>

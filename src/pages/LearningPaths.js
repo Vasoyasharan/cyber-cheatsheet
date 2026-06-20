@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { FaRoute, FaLock, FaGlobe, FaShieldAlt, FaFlag, FaChevronRight, FaCheckCircle, FaArrowRight, FaClock, FaLayerGroup } from 'react-icons/fa';
+import { FaRoute, FaLock, FaGlobe, FaShieldAlt, FaFlag, FaChevronRight, FaCheckCircle, FaArrowRight, FaClock, FaLayerGroup, FaTrophy, FaBolt } from 'react-icons/fa';
 import GradientHeader from '../components/UI/GradientHeader';
 
 const paths = [
@@ -80,6 +80,27 @@ const paths = [
       { title: 'CVE Research', type: 'reference', description: 'Look up CVEs for the exact service version you found during enumeration.', link: '/cve' },
       { title: 'Know Your Ports', type: 'reference', description: 'Instantly identify services from open ports using the Port Reference.', link: '/ports' },
     ]
+  },
+  {
+    id: 'redteam',
+    title: 'Red Team Operator',
+    subtitle: 'Advanced Adversary Simulation',
+    icon: '🎯',
+    color: '#f87171',
+    difficulty: 'Expert',
+    duration: '8–12 weeks',
+    steps: [
+      { title: 'OSINT & Target Profiling', type: 'tool', id: 'osint', description: 'Build a comprehensive intelligence picture: employees, tech stack, email formats, VPN ranges, and infrastructure via LinkedIn, Shodan, Censys, and WHOIS.', link: '/tools' },
+      { title: 'Phishing Infrastructure', type: 'sheet', description: 'Set up GoPhish, typosquat domains with valid TLS certs. Clone login portals. Capture credentials and tokens via Evilginx2 reverse proxy.', link: '/cheatsheets' },
+      { title: 'Initial Access — External Attack Surface', type: 'sheet', description: 'Exploit exposed services, public-facing apps, VPN gateways, and forgotten staging environments. Check CVEs for found service versions.', link: '/cheatsheets' },
+      { title: 'AV/EDR Evasion Techniques', type: 'sheet', description: 'Understand AV signatures, behavioral analysis, and AMSI. Use custom loaders, obfuscation, sleep masks, and PPID spoofing to evade detection.', link: '/cheatsheets' },
+      { title: 'C2 Framework Setup & Tradecraft', type: 'sheet', id: 'c2', description: 'Deploy a full C2 (Cobalt Strike / Sliver / Havoc). Set up redirectors, malleable profiles, domain fronting, and DNS beacons for stealthy comms.', link: '/cheatsheets' },
+      { title: 'Internal Reconnaissance & BloodHound', type: 'tool', id: 'nmap', description: 'Once inside, map the internal network: hosts, services, domain trusts. Use BloodHound to visualize AD attack paths to Domain Admin.', link: '/tools' },
+      { title: 'Privilege Escalation & Credential Theft', type: 'sheet', description: 'Escalate via token impersonation, SeImpersonatePrivilege (Potatoes), UAC bypass, LAPS, and credential dumping with Mimikatz, lsassy, Rubeus.', link: '/cheatsheets' },
+      { title: 'Lateral Movement Techniques', type: 'sheet', description: 'Move through the network using Pass-the-Hash, Pass-the-Ticket, Overpass-the-Hash, DCOM, WinRM, and RDP with harvested credentials.', link: '/cheatsheets' },
+      { title: 'Domain Compromise & Persistence', type: 'sheet', description: 'DCSync to dump all domain hashes. Golden/Silver Tickets for long-term access. Persist via scheduled tasks, WMI subscriptions, or registry run keys.', link: '/cheatsheets' },
+      { title: 'Reporting & MITRE ATT&CK Mapping', type: 'reference', description: 'Document the entire attack chain: IOCs, TTPs mapped to MITRE ATT&CK framework, business impact, and a remediation roadmap for the client.', link: '/glossary' },
+    ]
   }
 ];
 
@@ -105,6 +126,13 @@ const LearningPaths = () => {
     return Math.round((done / steps.length) * 100);
   };
 
+  const totalSteps = paths.reduce((sum, p) => sum + p.steps.length, 0);
+  const totalCompleted = paths.reduce((sum, p) =>
+    sum + p.steps.filter((_, i) => completed[`${p.id}_${i}`]).length, 0
+  );
+  const pathsStarted = paths.filter(p => p.steps.some((_, i) => completed[`${p.id}_${i}`])).length;
+  const pathsMastered = paths.filter(p => p.steps.every((_, i) => completed[`${p.id}_${i}`])).length;
+
   return (
     <div style={{ padding: '0 20px 60px', maxWidth: '1200px', margin: '0 auto' }}>
       <GradientHeader
@@ -113,10 +141,43 @@ const LearningPaths = () => {
         icon={<FaRoute />}
       />
 
+      {/* Overall Progress Dashboard */}
+      {totalCompleted > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+            gap: '14px',
+            marginBottom: '28px',
+            padding: '20px 24px',
+            background: 'var(--card-bg)',
+            borderRadius: '16px',
+            border: '1px solid var(--glass-border)',
+          }}
+        >
+          {[
+            { label: 'Steps Done', value: totalCompleted, total: totalSteps, icon: <FaCheckCircle />, color: '#34d399' },
+            { label: 'Paths Started', value: pathsStarted, total: paths.length, icon: <FaRoute />, color: '#38bdf8' },
+            { label: 'Paths Mastered', value: pathsMastered, total: paths.length, icon: <FaTrophy />, color: '#fbbf24' },
+            { label: 'Overall', value: `${Math.round((totalCompleted / totalSteps) * 100)}%`, icon: <FaBolt />, color: '#a78bfa' },
+          ].map((stat) => (
+            <div key={stat.label} style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '22px', color: stat.color, marginBottom: '4px' }}>{stat.icon}</div>
+              <div style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text)' }}>
+                {stat.total ? `${stat.value}/${stat.total}` : stat.value}
+              </div>
+              <div style={{ fontSize: '11px', color: 'var(--text-lighter)', fontWeight: '600' }}>{stat.label}</div>
+            </div>
+          ))}
+        </motion.div>
+      )}
       {/* Path Cards Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '20px', margin: '30px 0' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: '20px', margin: '30px 0' }}>
         {paths.map((path, i) => {
           const progress = getProgress(path.id, path.steps);
+          const isExpert = path.id === 'redteam';
           return (
             <motion.div
               key={path.id}
@@ -124,18 +185,31 @@ const LearningPaths = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
               onClick={() => setActivePath(activePath?.id === path.id ? null : path)}
-              className="gradient-border-card"
               style={{
                 padding: '24px',
                 cursor: 'pointer',
-                background: `linear-gradient(135deg, ${path.color}12 0%, var(--card-bg) 100%)`,
-                border: `1px solid ${path.color}33`,
+                background: `linear-gradient(135deg, ${path.color}${isExpert ? '20' : '12'} 0%, var(--card-bg) 100%)`,
+                border: activePath?.id === path.id ? `2px solid ${path.color}88` : `1px solid ${path.color}33`,
                 borderRadius: '16px',
+                boxShadow: isExpert ? `0 0 32px ${path.color}25` : 'none',
+                position: 'relative',
+                overflow: 'hidden',
               }}
-              whileHover={{ y: -6, boxShadow: `0 16px 40px ${path.color}25` }}
+              whileHover={{ y: -6, boxShadow: `0 16px 40px ${path.color}30` }}
               whileTap={{ scale: 0.98 }}
             >
-              <div style={{ fontSize: '36px', color: path.color, marginBottom: '12px' }}>{path.icon}</div>
+              {isExpert && (
+                <div style={{
+                  position: 'absolute', top: '12px', right: '12px',
+                  background: 'linear-gradient(135deg, #f87171, #fb923c)',
+                  color: 'white', fontSize: '9px', fontWeight: '900',
+                  padding: '3px 8px', borderRadius: '10px', letterSpacing: '0.5px',
+                  textTransform: 'uppercase',
+                }}>⚡ Expert</div>
+              )}
+              <div style={{ fontSize: '36px', color: path.color, marginBottom: '12px' }}>
+                {typeof path.icon === 'string' ? path.icon : path.icon}
+              </div>
               <h3 style={{ color: 'var(--text)', fontWeight: '800', marginBottom: '4px', fontSize: '18px' }}>{path.title}</h3>
               <p style={{ color: path.color, fontSize: '13px', fontWeight: '600', marginBottom: '12px' }}>{path.subtitle}</p>
               <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
@@ -159,7 +233,9 @@ const LearningPaths = () => {
                 />
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
-                <span style={{ fontSize: '11px', color: 'var(--text-lighter)' }}>{progress}% complete</span>
+                <span style={{ fontSize: '11px', color: 'var(--text-lighter)' }}>
+                  {progress === 100 ? '🏆 Complete!' : `${progress}% complete`}
+                </span>
                 <motion.span animate={{ x: activePath?.id === path.id ? 4 : 0 }} style={{ color: path.color, fontSize: '13px' }}>
                   <FaChevronRight />
                 </motion.span>

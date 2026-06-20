@@ -1,6 +1,6 @@
 import { useState } from 'react'; 
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaHistory, FaTimes, FaCopy, FaTrash, FaDownload } from 'react-icons/fa';
+import { FaHistory, FaTimes, FaCopy, FaTrash, FaDownload, FaTerminal } from 'react-icons/fa';
 import { useCommandHistory } from '../../contexts/CommandHistoryContext';
 import { copyToClipboard } from '../../utils/copyToClipboard';
 import { toast } from 'react-toastify';
@@ -37,28 +37,27 @@ const CommandHistory = () => {
 
   return (
     <div className="command-history-container">
-      <motion.button
-        className="history-toggle"
-        onClick={() => setExpanded(!expanded)}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        title="View command history (Ctrl+H)"
-      >
-        <FaHistory />
-        <span>History ({history.length})</span>
-      </motion.button>
-      
       <AnimatePresence>
         {expanded && (
           <motion.div
             className="history-panel"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, y: 16, scale: 0.94, transformOrigin: 'bottom right' }}
+            animate={{ opacity: 1, y: 0, scale: 1, transformOrigin: 'bottom right' }}
+            exit={{ opacity: 0, y: 16, scale: 0.94, transformOrigin: 'bottom right' }}
+            transition={{ duration: 0.26, ease: [0.34, 1.3, 0.64, 1] }}
           >
             <div className="history-header">
-              <h4>📋 Recently Used Commands</h4>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FaTerminal style={{ fontSize: '14px' }} />
+                <h4>Command History</h4>
+                <span style={{
+                  background: 'rgba(255,255,255,0.2)',
+                  padding: '1px 7px',
+                  borderRadius: '10px',
+                  fontSize: '11px',
+                  fontWeight: '800'
+                }}>{history.length}</span>
+              </div>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <motion.button
                   onClick={handleExport}
@@ -66,20 +65,21 @@ const CommandHistory = () => {
                   title="Export as .sh script"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  style={{ color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '4px' }}
                 >
-                  <FaDownload /> Export .sh
+                  <FaDownload /> Export
                 </motion.button>
-                <button
+                <motion.button
                   onClick={() => {
                     clearHistory();
                     toast.success('History cleared', { position: 'bottom-right', autoClose: 1500, hideProgressBar: true });
                   }}
                   className="clear-button"
                   title="Clear all commands"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <FaTimes /> Clear
-                </button>
+                  <FaTimes />
+                </motion.button>
               </div>
             </div>
             <div className="history-list">
@@ -87,19 +87,27 @@ const CommandHistory = () => {
                 <motion.div
                   key={index}
                   className="history-item"
-                  initial={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: 16 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ delay: index * 0.05, duration: 0.2 }}
+                  exit={{ opacity: 0, x: 16 }}
+                  transition={{ delay: index * 0.04, duration: 0.18 }}
                 >
+                  <span style={{
+                    flexShrink: 0,
+                    width: '20px', height: '20px',
+                    borderRadius: '50%',
+                    background: 'var(--gradient-primary)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '9px', fontWeight: '800', color: 'white',
+                  }}>{index + 1}</span>
                   <code className="command-text">{cmd}</code>
                   <div className="command-actions">
                     <motion.button
                       onClick={() => handleCopyCommand(cmd)}
                       className="action-btn copy-btn"
                       title="Copy command"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ scale: 1.15 }}
+                      whileTap={{ scale: 0.9 }}
                     >
                       <FaCopy />
                     </motion.button>
@@ -107,8 +115,8 @@ const CommandHistory = () => {
                       onClick={() => handleDeleteCommand(cmd)}
                       className="action-btn delete-btn"
                       title="Delete command"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ scale: 1.15 }}
+                      whileTap={{ scale: 0.9 }}
                     >
                       <FaTrash />
                     </motion.button>
@@ -119,6 +127,23 @@ const CommandHistory = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <motion.button
+        className="history-toggle"
+        onClick={() => setExpanded(!expanded)}
+        whileTap={{ scale: 0.93 }}
+        title="View command history (Ctrl+H)"
+      >
+        <motion.span
+          animate={{ rotate: expanded ? 180 : 0 }}
+          transition={{ duration: 0.3 }}
+          style={{ display: 'flex', alignItems: 'center' }}
+        >
+          <FaHistory />
+        </motion.span>
+        <span>History</span>
+        <span className="history-badge">{history.length}</span>
+      </motion.button>
     </div>
   );
 };

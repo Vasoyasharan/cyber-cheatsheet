@@ -1,9 +1,171 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaSearch, FaShieldAlt, FaExclamationTriangle, FaExternalLinkAlt, FaCopy } from 'react-icons/fa';
+import { FaSearch, FaShieldAlt, FaExclamationTriangle, FaExternalLinkAlt, FaCopy, FaTerminal } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { copyToClipboard } from '../utils/copyToClipboard';
 import GradientHeader from '../components/UI/GradientHeader';
+
+/* ── Creative CVE Loader ─────────────────────────────────────────── */
+const HACKER_LINES = [
+  '> Initializing NVD API connection...',
+  '> Querying NIST vulnerability database...',
+  '> Bypassing rate-limit throttle... ⚡',
+  '> Decrypting CVSS vector strings...',
+  '> Cross-referencing CWE taxonomy...',
+  '> Pulling exploit references from CVE feed...',
+  '> Scanning advisory metadata...',
+  '> Parsing CVSS v3.1 base score...',
+  '> Verifying CPE affected versions...',
+  '> Correlating public PoC indicators...',
+  '> Aggregating NVD enrichment data...',
+  '> Checking for CISA KEV overlap...',
+  '> Loading patch advisory links...',
+  '> Almost there — NVD can be slow ☕',
+  '> Still querying... hang tight, operator 🛡️',
+];
+
+const CVELoader = ({ cveId }) => {
+  const [lines, setLines] = useState([HACKER_LINES[0]]);
+  const [progress, setProgress] = useState(4);
+  const [cursor, setCursor] = useState(true);
+  const lineIndex = useRef(1);
+  const progressRef = useRef(4);
+
+  useEffect(() => {
+    // Blinking cursor
+    const cursorTimer = setInterval(() => setCursor(c => !c), 530);
+
+    // Add a new terminal line every ~2.5 s, cycle after exhausting all
+    const lineTimer = setInterval(() => {
+      const next = HACKER_LINES[lineIndex.current % HACKER_LINES.length];
+      lineIndex.current += 1;
+      setLines(prev => [...prev.slice(-6), next]); // keep last 7 lines visible
+    }, 2500);
+
+    // Slow progress bar — crawls but never reaches 100 on its own
+    const progressTimer = setInterval(() => {
+      progressRef.current = Math.min(progressRef.current + Math.random() * 2.5, 92);
+      setProgress(Math.floor(progressRef.current));
+    }, 800);
+
+    return () => {
+      clearInterval(cursorTimer);
+      clearInterval(lineTimer);
+      clearInterval(progressTimer);
+    };
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.96 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.96 }}
+      style={{
+        margin: '10px 0 24px',
+        borderRadius: '18px',
+        border: '1.5px solid rgba(99,102,241,0.35)',
+        background: 'linear-gradient(135deg, rgba(10,10,20,0.95) 0%, rgba(17,24,39,0.95) 100%)',
+        overflow: 'hidden',
+        boxShadow: '0 0 40px rgba(99,102,241,0.18), 0 8px 32px rgba(0,0,0,0.5)',
+      }}
+    >
+      {/* Title bar */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '8px',
+        padding: '10px 16px',
+        background: 'rgba(99,102,241,0.12)',
+        borderBottom: '1px solid rgba(99,102,241,0.2)',
+      }}>
+        {['#f87171','#fbbf24','#34d399'].map(c => (
+          <div key={c} style={{ width: 11, height: 11, borderRadius: '50%', background: c, opacity: 0.85 }} />
+        ))}
+        <FaTerminal style={{ color: '#a5b4fc', fontSize: 12, marginLeft: 6 }} />
+        <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 11, color: '#a5b4fc', fontWeight: 700 }}>
+          nvd-query — {cveId}
+        </span>
+        {/* Pulsing live dot */}
+        <motion.div
+          animate={{ opacity: [1, 0.2, 1] }}
+          transition={{ duration: 1.2, repeat: Infinity }}
+          style={{ marginLeft: 'auto', width: 8, height: 8, borderRadius: '50%', background: '#34d399' }}
+        />
+        <span style={{ fontSize: 10, color: '#34d399', fontFamily: "'JetBrains Mono',monospace" }}>LIVE</span>
+      </div>
+
+      {/* Terminal body */}
+      <div style={{ padding: '18px 20px 14px', minHeight: '180px' }}>
+        {/* Animated shield */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}>
+          <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+            <motion.div
+              animate={{ boxShadow: ['0 0 12px #6366f1aa', '0 0 32px #818cf8cc', '0 0 12px #6366f1aa'] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(99,102,241,0.15)', border: '2px solid rgba(99,102,241,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                <FaShieldAlt style={{ fontSize: 26, color: '#818cf8' }} />
+              </motion.div>
+            </motion.div>
+            {/* Matrix rain dots */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
+              {[0, 1, 2, 3, 4].map(i => (
+                <motion.div key={i}
+                  animate={{ opacity: [0, 1, 0], y: [0, 8] }}
+                  transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.22, ease: 'linear' }}
+                  style={{ width: 3, height: 3, borderRadius: '50%', background: '#34d399' }}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Terminal lines */}
+          <div style={{ flex: 1, fontFamily: "'JetBrains Mono',monospace", fontSize: 12, lineHeight: '1.9' }}>
+            <AnimatePresence initial={false}>
+              {lines.map((line, i) => (
+                <motion.div
+                  key={line + i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: i === lines.length - 1 ? 1 : 0.45, x: 0 }}
+                  style={{ color: i === lines.length - 1 ? '#a5b4fc' : '#475569' }}
+                >
+                  {line}
+                  {i === lines.length - 1 && (
+                    <span style={{ opacity: cursor ? 1 : 0, color: '#818cf8' }}>█</span>
+                  )}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div style={{ padding: '0 20px 18px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+          <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, color: '#64748b' }}>FETCHING NVD DATA</span>
+          <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, color: '#818cf8' }}>{progress}%</span>
+        </div>
+        <div style={{ height: 5, borderRadius: 99, background: 'rgba(99,102,241,0.12)', overflow: 'hidden' }}>
+          <motion.div
+            animate={{ width: `${progress}%` }}
+            transition={{ ease: 'easeOut', duration: 0.8 }}
+            style={{
+              height: '100%', borderRadius: 99,
+              background: 'linear-gradient(90deg, #6366f1, #818cf8, #a78bfa)',
+              boxShadow: '0 0 8px #818cf8aa',
+            }}
+          />
+        </div>
+        <p style={{ fontSize: 10, color: '#475569', margin: '8px 0 0', fontFamily: "'JetBrains Mono',monospace" }}>
+          NVD API can take 30s–2min · sit tight, operator 🛡️
+        </p>
+      </div>
+    </motion.div>
+  );
+};
 
 const severityColor = { CRITICAL: '#f87171', HIGH: '#fb923c', MEDIUM: '#fbbf24', LOW: '#34d399', NONE: '#64748b' };
 const severityBg = { CRITICAL: 'rgba(248,113,113,0.15)', HIGH: 'rgba(251,146,60,0.15)', MEDIUM: 'rgba(251,191,36,0.15)', LOW: 'rgba(52,211,153,0.15)', NONE: 'rgba(100,116,139,0.15)' };
@@ -36,7 +198,16 @@ const CVELookup = () => {
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
 
-  const examples = ['CVE-2021-44228', 'CVE-2017-0144', 'CVE-2019-0708', 'CVE-2020-1472', 'CVE-2021-4034'];
+  const examples = [
+    { id: 'CVE-2021-44228', label: 'Log4Shell' },
+    { id: 'CVE-2017-0144', label: 'EternalBlue' },
+    { id: 'CVE-2019-0708', label: 'BlueKeep' },
+    { id: 'CVE-2020-1472', label: 'Zerologon' },
+    { id: 'CVE-2021-4034', label: 'PwnKit' },
+    { id: 'CVE-2014-0160', label: 'Heartbleed' },
+    { id: 'CVE-2021-26855', label: 'ProxyLogon' },
+    { id: 'CVE-2022-0847', label: 'DirtyPipe' },
+  ];
 
   const lookup = async (cveId) => {
     const id = (cveId || input).trim().toUpperCase();
@@ -76,25 +247,30 @@ const CVELookup = () => {
   };
 
   return (
-    <div style={{ padding: '0 20px 60px', maxWidth: '900px', margin: '0 auto' }}>
+    <div style={{ padding: '0 20px 60px', maxWidth: '1100px', margin: '0 auto' }}>
       <GradientHeader
         title="CVE Lookup"
         subtitle="Search the NVD database for CVE details — CVSS score, description, severity, and references"
         icon={<FaShieldAlt />}
       />
 
-      {/* Examples */}
-      <div style={{ margin: '20px 0 12px' }}>
-        <p style={{ fontSize: '12px', color: 'var(--text-lighter)', marginBottom: '8px', fontWeight: '600' }}>FAMOUS CVEs:</p>
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          {examples.map(ex => (
-            <motion.button key={ex} onClick={() => { setInput(ex); lookup(ex); }} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-              style={{ padding: '5px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '700', border: '1px solid var(--border-strong)', background: 'transparent', color: 'var(--primary)', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace" }}>
-              {ex}
-            </motion.button>
-          ))}
-        </div>
-      </div>
+      {/* Two-column layout */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '24px', alignItems: 'flex-start' }}>
+        {/* Left: Search + results */}
+        <div>
+          {/* Famous CVEs */}
+          <div style={{ margin: '20px 0 16px' }}>
+            <p style={{ fontSize: '11px', color: 'var(--text-lighter)', marginBottom: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Famous CVEs — click to load:</p>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {examples.map(ex => (
+                <motion.button key={ex.id} onClick={() => { setInput(ex.id); lookup(ex.id); }} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                  style={{ padding: '6px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', border: '1px solid var(--border-strong)', background: 'var(--card-bg)', color: 'var(--primary)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px' }}>{ex.id}</span>
+                  <span style={{ fontSize: '9px', color: 'var(--text-lighter)', fontFamily: 'inherit' }}>{ex.label}</span>
+                </motion.button>
+              ))}
+            </div>
+          </div>
 
       {/* Input */}
       <div style={{ display: 'flex', gap: '12px', marginBottom: '28px' }}>
@@ -112,15 +288,21 @@ const CVELookup = () => {
           onFocus={e => e.target.style.borderColor = 'var(--primary)'}
           onBlur={e => e.target.style.borderColor = 'var(--border-strong)'}
         />
-        <motion.button onClick={() => lookup()} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-          style={{ padding: '14px 24px', borderRadius: '12px', border: 'none', background: loading ? 'var(--border)' : 'var(--gradient-primary)', color: 'white', fontWeight: '700', fontSize: '14px', cursor: loading ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px', minWidth: '120px', justifyContent: 'center' }}>
+        <motion.button onClick={() => lookup()} whileHover={{ scale: loading ? 1 : 1.04 }} whileTap={{ scale: loading ? 1 : 0.96 }}
+          disabled={loading}
+          style={{ padding: '14px 24px', borderRadius: '12px', border: 'none', background: loading ? 'rgba(99,102,241,0.3)' : 'var(--gradient-primary)', color: 'white', fontWeight: '700', fontSize: '14px', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px', minWidth: '120px', justifyContent: 'center' }}>
           {loading ? (
-            <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} style={{ width: '18px', height: '18px', border: '2px solid white', borderTopColor: 'transparent', borderRadius: '50%' }} />
+            <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12 }}>Scanning...</span>
           ) : (
             <><FaSearch /> Lookup</>
           )}
         </motion.button>
       </div>
+
+      {/* Creative loader */}
+      <AnimatePresence>
+        {loading && <CVELoader cveId={input} />}
+      </AnimatePresence>
 
       {/* Error */}
       {error && (
@@ -211,8 +393,77 @@ const CVELookup = () => {
           <p style={{ fontSize: '12px', marginTop: '8px' }}>Uses the official NIST NVD API — no key required</p>
         </motion.div>
       )}
+        </div>{/* end left column */}
+
+        {/* Right: CVSS Guide */}
+        <div style={{ position: 'sticky', top: '80px' }}>
+          <div style={{
+            background: 'var(--card-bg)',
+            borderRadius: '16px',
+            border: '1px solid var(--glass-border)',
+            overflow: 'hidden',
+          }}>
+            <div style={{
+              padding: '14px 18px',
+              background: 'var(--gradient-primary)',
+              display: 'flex', alignItems: 'center', gap: '8px',
+            }}>
+              <FaShieldAlt style={{ color: 'white', fontSize: '14px' }} />
+              <h4 style={{ color: 'white', fontSize: '13px', fontWeight: '800', margin: 0 }}>CVSS Score Guide</h4>
+            </div>
+            <div style={{ padding: '14px' }}>
+              {[
+                { range: '9.0 – 10.0', label: 'Critical', color: '#f87171', note: 'Wormable, unauthenticated RCE, domain compromise' },
+                { range: '7.0 – 8.9', label: 'High', color: '#fb923c', note: 'Significant impact, likely exploited in the wild' },
+                { range: '4.0 – 6.9', label: 'Medium', color: '#fbbf24', note: 'Requires interaction or auth, but still dangerous' },
+                { range: '0.1 – 3.9', label: 'Low', color: '#34d399', note: 'Limited impact, edge-case conditions required' },
+                { range: '0.0', label: 'None', color: '#64748b', note: 'No security impact' },
+              ].map(s => (
+                <div key={s.label} style={{ display: 'flex', gap: '10px', padding: '10px 0', borderBottom: '1px solid var(--border)' }}>
+                  <div style={{
+                    minWidth: '60px', height: '24px',
+                    background: s.color + '25', color: s.color,
+                    borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '10px', fontWeight: '800', border: `1px solid ${s.color}44`,
+                  }}>{s.label}</div>
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text)', fontFamily: "'JetBrains Mono', monospace" }}>{s.range}</div>
+                    <div style={{ fontSize: '10px', color: 'var(--text-lighter)', lineHeight: '1.4' }}>{s.note}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick tips */}
+          <div style={{
+            marginTop: '14px',
+            background: 'var(--card-bg)',
+            borderRadius: '16px',
+            border: '1px solid var(--glass-border)',
+            padding: '16px',
+          }}>
+            <h4 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px' }}>
+              🎯 Attacker's POV
+            </h4>
+            {[
+              { tip: 'Network vector + no auth = highest priority target' },
+              { tip: 'Score ≥ 9.0 = patch within 24–48h, no exceptions' },
+              { tip: 'Check NVD for public PoC references in the links' },
+              { tip: 'Correlate CVSS with your asset criticality' },
+              { tip: 'CVSS 7.x on internet-facing service = critical in context' },
+            ].map((t, i) => (
+              <div key={i} style={{ display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'flex-start' }}>
+                <span style={{ color: 'var(--primary)', fontSize: '12px', flexShrink: 0, marginTop: '1px' }}>▸</span>
+                <p style={{ fontSize: '11px', color: 'var(--text-light)', lineHeight: '1.5', margin: 0 }}>{t.tip}</p>
+              </div>
+            ))}
+          </div>
+        </div>{/* end right column */}
+      </div>{/* end two-column grid */}
     </div>
   );
 };
 
 export default CVELookup;
+

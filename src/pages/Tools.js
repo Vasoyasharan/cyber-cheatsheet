@@ -25,6 +25,8 @@ import FfufBuilder from '../components/CommandBuilders/FfufBuilder';
 import TheHarvesterBuilder from '../components/CommandBuilders/TheHarvesterBuilder';
 import AircrackBuilder from '../components/CommandBuilders/AircrackBuilder';
 import CrackMapExecBuilder from '../components/CommandBuilders/CrackMapExecBuilder';
+import WfuzzBuilder from '../components/CommandBuilders/WfuzzBuilder';
+import DNSreconBuilder from '../components/CommandBuilders/DNSreconBuilder';
 import RecentlyViewedBar from '../components/UI/RecentlyViewedBar';
 import { useRecentlyViewed } from '../contexts/RecentlyViewedContext';
 
@@ -248,6 +250,24 @@ const Tools = () => {
       category: 'Enumeration',
       difficulty: 'advanced',
       description: 'Swiss army knife for Active Directory & network exploitation'
+    },
+    {
+      id: 'wfuzz',
+      name: 'Wfuzz',
+      icon: <FaBolt />,
+      component: <WfuzzBuilder />,
+      category: 'Web',
+      difficulty: 'intermediate',
+      description: 'Powerful web fuzzer — fuzz dirs, params, auth, headers and more'
+    },
+    {
+      id: 'dnsrecon',
+      name: 'DNSrecon',
+      icon: <FaSearch />,
+      component: <DNSreconBuilder />,
+      category: 'Recon',
+      difficulty: 'beginner',
+      description: 'DNS enumeration — zone transfers, brute-force, reverse lookup'
     }
   ];
 

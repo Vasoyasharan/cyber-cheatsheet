@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaCode, FaExchangeAlt, FaRobot, FaCheck, FaWindows } from 'react-icons/fa';
+import { FaCode, FaExchangeAlt, FaRobot, FaCheck, FaHashtag, FaNetworkWired, FaKey, FaLock } from 'react-icons/fa';
 import { LuRegex } from 'react-icons/lu';
+import { MdToken } from 'react-icons/md';
 import GradientHeader from '../components/UI/GradientHeader';
 import AnimatedCard from '../components/UI/AnimatedCard';
 import Base64Encoder from '../components/Utilities/Base64Encoder';
@@ -10,6 +11,10 @@ import ReverseShellGenerator from '../components/Utilities/ReverseShellGenerator
 import RegexTester from '../components/Utilities/RegexTester';
 import JSONFormatter from '../components/Utilities/JSONFormatter';
 import HexConverter from '../components/Utilities/HexConverter';
+import HashGenerator from '../components/Utilities/HashGenerator';
+import IPCIDRCalculator from '../components/Utilities/IPCIDRCalculator';
+import JWTDecoder from '../components/Utilities/JWTDecoder';
+import PasswordStrengthChecker from '../components/Utilities/PasswordStrengthChecker';
 import './Utilities.css';
 
 const Utilities = () => {
@@ -42,6 +47,42 @@ const Utilities = () => {
       description: 'Convert between hex, ASCII, and binary formats',
       category: 'Encoding',
       color: '#4CAF50'
+    },
+    {
+      id: 'hash',
+      name: 'Hash Generator',
+      icon: <FaHashtag />,
+      component: <HashGenerator />,
+      description: 'Generate MD5, SHA-1, SHA-256 & SHA-512 hashes instantly — no server needed',
+      category: 'Crypto',
+      color: '#fbbf24'
+    },
+    {
+      id: 'cidr',
+      name: 'IP / CIDR Calculator',
+      icon: <FaNetworkWired />,
+      component: <IPCIDRCalculator />,
+      description: 'Calculate network address, broadcast, usable hosts and subnet mask from CIDR',
+      category: 'Network',
+      color: '#34d399'
+    },
+    {
+      id: 'jwt',
+      name: 'JWT Decoder',
+      icon: <MdToken />,
+      component: <JWTDecoder />,
+      description: 'Decode JWT tokens — inspect header, payload claims and expiry without a server',
+      category: 'Web',
+      color: '#60a5fa'
+    },
+    {
+      id: 'password',
+      name: 'Password Strength',
+      icon: <FaLock />,
+      component: <PasswordStrengthChecker />,
+      description: 'Real-time entropy score, GPU crack-time estimate and character class analysis',
+      category: 'Crypto',
+      color: '#a78bfa'
     },
     {
       id: 'reverse-shell',
@@ -90,7 +131,7 @@ const Utilities = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="sidebar-title">Tools</div>
+          <div className="sidebar-title">Tools ({tools.length})</div>
           {tools.map((tool, idx) => (
             <motion.button
               key={tool.id}
@@ -98,12 +139,15 @@ const Utilities = () => {
               onClick={() => setActiveTool(tool.id)}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: idx * 0.05 }}
+              transition={{ delay: idx * 0.04 }}
               whileHover={{ x: 4 }}
               whileTap={{ scale: 0.98 }}
             >
               <span className="tool-icon">{tool.icon}</span>
-              <span className="tool-label">{tool.name}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+                <span className="tool-label">{tool.name}</span>
+                <span style={{ fontSize: '9px', color: 'var(--text-lighter)', textTransform: 'uppercase', letterSpacing: '0.4px', fontWeight: 700 }}>{tool.category}</span>
+              </div>
             </motion.button>
           ))}
         </motion.div>
@@ -111,9 +155,10 @@ const Utilities = () => {
         {/* Main Content */}
         <motion.div
           className="utilities-content"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
+          key={activeTool}
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.25 }}
         >
           {activeTool_data && (
             <>
@@ -147,7 +192,7 @@ const Utilities = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <h3>Quick Reference</h3>
+        <h3>All Utilities ({tools.length})</h3>
         <div className="reference-grid">
           {tools.map(tool => (
             <motion.div
@@ -155,12 +200,14 @@ const Utilities = () => {
               className="reference-card"
               onClick={() => setActiveTool(tool.id)}
               whileHover={{ translateY: -4 }}
+              style={{ borderTop: `3px solid ${tool.color}44`, cursor: 'pointer' }}
             >
               <div className="ref-icon" style={{ color: tool.color }}>
                 {tool.icon}
               </div>
               <h4>{tool.name}</h4>
               <p>{tool.description}</p>
+              <span style={{ fontSize: '10px', color: tool.color, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', marginTop: 6, display: 'block' }}>{tool.category}</span>
             </motion.div>
           ))}
         </div>
