@@ -348,6 +348,52 @@ const LearningPaths = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Pro Tips Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        style={{
+          marginTop: '48px',
+          padding: '28px',
+          background: 'var(--card-bg)',
+          borderRadius: '20px',
+          border: '1px solid var(--glass-border)',
+        }}
+      >
+        <h3 style={{ color: 'var(--text)', fontWeight: '800', marginBottom: '20px', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <FaBolt style={{ color: '#fbbf24' }} /> Platform Usage Tips
+        </h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+          {[
+            { icon: '🗺️', title: 'Click a path card', desc: 'Expand any path to see all steps with direct links to tools and guides.' },
+            { icon: '✅', title: 'Track your progress', desc: 'Click the circle on each step to mark it done. Progress is saved locally.' },
+            { icon: '📚', title: 'Each step is a link', desc: 'Every step has a Go button that takes you to the right tool or cheat sheet.' },
+            { icon: '🏆', title: 'Earn mastery', desc: 'Complete all steps in a path to earn the Complete badge. Master all 5!' },
+            { icon: '🔍', title: '15 Cheat Sheets', desc: 'Filter by difficulty and category — from beginner OSINT to advanced RE.' },
+            { icon: '⚡', title: '23 Tool Builders', desc: 'Interactive command builders — generate and copy commands in seconds.' },
+          ].map((tip, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.08 + 0.6 }}
+              style={{
+                padding: '16px',
+                background: 'var(--bg2)',
+                borderRadius: '12px',
+                border: '1px solid var(--border)',
+              }}
+              whileHover={{ y: -3, boxShadow: '0 8px 24px rgba(0,0,0,0.15)' }}
+            >
+              <div style={{ fontSize: '24px', marginBottom: '8px' }}>{tip.icon}</div>
+              <div style={{ fontWeight: '700', color: 'var(--text)', fontSize: '13px', marginBottom: '6px' }}>{tip.title}</div>
+              <div style={{ fontSize: '12px', color: 'var(--text-light)', lineHeight: '1.5' }}>{tip.desc}</div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
     </div>
   );
 };

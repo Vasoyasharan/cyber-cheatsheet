@@ -111,10 +111,10 @@ const Home = () => {
 
   // Stats with counters
   const stats = [
-    { label: 'Tools', value: 14, icon: <FaTerminal /> },
-    { label: 'Cheat Sheets', value: 9, icon: <FaBook /> },
-    { label: 'Difficulty Levels', value: 3, icon: <FaLightbulb /> },
-    { label: 'Resources', value: 100, icon: <FaCheckCircle /> }
+    { label: 'Tools', value: 23, icon: <FaTerminal /> },
+    { label: 'Cheat Sheets', value: 15, icon: <FaBook /> },
+    { label: 'Learning Paths', value: 5, icon: <FaLightbulb /> },
+    { label: 'Techniques', value: 420, icon: <FaCheckCircle /> }
   ];
 
   // Container variants

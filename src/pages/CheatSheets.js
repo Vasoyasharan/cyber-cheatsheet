@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { FaSearch, FaLinux, FaWindows, FaGlobe, FaUserSecret, FaCode, FaServer, FaUserShield, FaCloud, FaFilter, FaTimes, FaBook, FaShieldAlt, FaRocket, FaStar, FaClock, FaLightbulb, FaChartLine, FaLock, FaBrain, FaMobile, FaNetworkWired, FaBot, FaTools } from 'react-icons/fa';
+import { FaSearch, FaLinux, FaWindows, FaGlobe, FaUserSecret, FaCode, FaServer, FaUserShield, FaCloud, FaFilter, FaTimes, FaBook, FaShieldAlt, FaRocket, FaStar, FaClock, FaLightbulb, FaChartLine, FaLock, FaBrain, FaMobile, FaNetworkWired, FaBot, FaTools, FaRoute } from 'react-icons/fa';
 import LinuxPrivEsc from '../components/CheatSheets/LinuxPrivEsc';
 import WindowsPrivEsc from '../components/CheatSheets/WindowsPrivEsc';
 import WebAppTesting from '../components/CheatSheets/WebAppTesting';
@@ -10,6 +10,12 @@ import PayloadGeneration from '../components/CheatSheets/PayloadGeneration';
 import C2Frameworks from '../components/CheatSheets/C2Frameworks';
 import PostExploitation from '../components/CheatSheets/PostExploitation';
 import CloudPentesting from '../components/CheatSheets/CloudPentesting';
+import ReverseEngineering from '../components/CheatSheets/ReverseEngineering';
+import Cryptography from '../components/CheatSheets/Cryptography';
+import MobileSecurity from '../components/CheatSheets/MobileSecurity';
+import APISecurityCheatsheet from '../components/CheatSheets/APISecurityCheatsheet';
+import OSINTTechniques from '../components/CheatSheets/OSINTTechniques';
+import IncidentResponse from '../components/CheatSheets/IncidentResponse';
 import AnimatedCard from '../components/UI/AnimatedCard';
 import GradientHeader from '../components/UI/GradientHeader';
 import DifficultyBadge from '../components/UI/DifficultyBadge';
@@ -227,15 +233,16 @@ const CheatSheets = () => {
       id: 'reverseeng',
       name: 'Reverse Engineering',
       icon: <FaBrain />,
-      component: null,
+      component: <ReverseEngineering />,
       category: 'Analysis',
       difficulty: 'advanced',
-      description: 'Analyze and understand compiled binaries and malware',
+      description: 'Analyze compiled binaries with Ghidra, GDB, and anti-analysis bypass',
       color: '#E91E63',
       timeToRead: '30-40 min',
       techniques: 45,
-      tools: ['IDA Pro', 'Ghidra', 'x64dbg', 'Radare2'],
+      tools: ['IDA Pro', 'Ghidra', 'x64dbg', 'GDB+pwndbg', 'Frida'],
       prerequisites: ['Assembly language', 'CPU architecture', 'Debugging'],
+      learningPath: 'CTF Player',
       advancedTips: [
         'Use symbolic execution for vulnerability discovery',
         'Implement dynamic analysis for anti-analysis detection',
@@ -246,95 +253,100 @@ const CheatSheets = () => {
       id: 'crypto',
       name: 'Cryptography',
       icon: <FaLock />,
-      component: null,
+      component: <Cryptography />,
       category: 'Analysis',
       difficulty: 'advanced',
-      description: 'Understand encryption, hashing, and cryptographic protocols',
+      description: 'Hash cracking, OpenSSL, TLS testing, padding oracle, and RSA attacks',
       color: '#4CAF50',
       timeToRead: '25-30 min',
       techniques: 28,
-      tools: ['OpenSSL', 'GPG', 'hashcat', 'John the Ripper'],
+      tools: ['OpenSSL', 'hashcat', 'John the Ripper', 'testssl.sh', 'RsaCtfTool'],
       prerequisites: ['Math basics', 'Boolean algebra', 'Networking'],
+      learningPath: 'CTF Player',
       advancedTips: [
         'Identify weak cryptographic implementations',
-        'Exploit side-channel attacks on encryption',
-        'Perform differential cryptanalysis'
+        'Exploit padding oracle attacks on CBC ciphers',
+        'Use RsaCtfTool to automate RSA attack chains'
       ]
     },
     { 
       id: 'mobile',
       name: 'Mobile Security',
       icon: <FaMobile />,
-      component: null,
+      component: <MobileSecurity />,
       category: 'Security Testing',
       difficulty: 'intermediate',
-      description: 'Security testing for iOS and Android applications',
+      description: 'Android APK analysis, Frida hooking, SSL pinning bypass, iOS testing',
       color: '#00E5FF',
       timeToRead: '20-28 min',
       techniques: 32,
-      tools: ['Frida', 'Charles Proxy', 'APKTool', 'Burp Suite'],
+      tools: ['Frida', 'objection', 'APKTool', 'jadx', 'MobSF', 'Burp Suite'],
       prerequisites: ['Android/iOS basics', 'Mobile development', 'API testing'],
+      learningPath: 'Web App Hacker',
       advancedTips: [
-        'Use Frida for certificate pinning bypass',
-        'Perform memory dumping for sensitive data extraction',
-        'Test for insecure local storage'
+        'Use Frida + objection for one-command SSL pinning bypass',
+        'Dump keychain on iOS with objection for stored credentials',
+        'Run MobSF static analysis first to find quick wins'
       ]
     },
     { 
       id: 'api',
       name: 'API Security',
       icon: <FaNetworkWired />,
-      component: null,
+      component: <APISecurityCheatsheet />,
       category: 'Web Security',
       difficulty: 'intermediate',
-      description: 'RESTful and GraphQL API security testing methods',
+      description: 'REST & GraphQL security — IDOR, JWT attacks, mass assignment, SSRF',
       color: '#5C6BC0',
       timeToRead: '18-24 min',
       techniques: 26,
-      tools: ['Postman', 'GraphQL Playground', 'Burp Suite'],
+      tools: ['Postman', 'graphql-cop', 'Burp Suite', 'ffuf', 'jwt_tool'],
       prerequisites: ['HTTP basics', 'API knowledge', 'JSON/GraphQL'],
+      learningPath: 'Web App Hacker',
       advancedTips: [
-        'Enumerate API endpoints using automation',
-        'Test for rate limiting bypass techniques',
-        'Exploit GraphQL field suggestions'
+        'Always test with two accounts to catch IDOR in horizontal privilege escalation',
+        'Try batching GraphQL queries to bypass rate limits',
+        'Use JWT none-algorithm attack on misconfigured servers'
       ]
     },
     { 
       id: 'osint',
       name: 'OSINT Techniques',
       icon: <FaSearch />,
-      component: null,
+      component: <OSINTTechniques />,
       category: 'Reconnaissance',
       difficulty: 'beginner',
-      description: 'Open source intelligence gathering methodologies',
+      description: 'Google dorks, Shodan, subfinder, recon-ng, and metadata extraction',
       color: '#795548',
       timeToRead: '15-20 min',
       techniques: 24,
-      tools: ['Shodan', 'recon-ng', 'Maltego', 'theHarvester'],
+      tools: ['Shodan', 'recon-ng', 'subfinder', 'theHarvester', 'Maltego', 'gau'],
       prerequisites: ['General security knowledge', 'Research skills'],
+      learningPath: 'Complete Beginner',
       advancedTips: [
-        'Combine multiple OSINT sources for verification',
-        'Use advanced Shodan queries for target discovery',
-        'Leverage DNS records for infrastructure mapping'
+        'Chain subfinder → httpx → nuclei for automated vuln discovery',
+        'Use crt.sh for passive subdomain discovery (no API key needed)',
+        'Extract document metadata with exiftool to find internal usernames'
       ]
     },
     { 
       id: 'incident',
       name: 'Incident Response',
       icon: <FaRocket />,
-      component: null,
+      component: <IncidentResponse />,
       category: 'Incident Response',
       difficulty: 'intermediate',
-      description: 'Respond to and investigate security incidents',
+      description: 'PICERL framework, Windows/Linux triage, Volatility, YARA, IOC collection',
       color: '#D32F2F',
       timeToRead: '20-26 min',
       techniques: 30,
-      tools: ['YARA', 'Volatility', 'Autopsy', 'osquery'],
+      tools: ['YARA', 'Volatility 3', 'Autopsy', 'avml', 'winpmem'],
       prerequisites: ['Forensics basics', 'Windows/Linux systems', 'Log analysis'],
+      learningPath: 'Red Team Operator',
       advancedTips: [
-        'Implement memory forensics for rootkit detection',
-        'Chain timeline analysis with event logs',
-        'Use YARA rules for IOC detection'
+        'Always capture memory BEFORE isolating — volatile data is lost on shutdown',
+        'Check /proc/*/exe for deleted-but-running malware binaries',
+        'Use YARA with signature-base repo for immediate malware identification'
       ]
     }
   ];
@@ -411,7 +423,7 @@ const CheatSheets = () => {
         {[
           { icon: <FaBook />, label: 'Total Guides', value: cheatSheets.length },
           { icon: <FaRocket />, label: 'Total Techniques', value: cheatSheets.reduce((sum, cs) => sum + (cs.techniques || 0), 0) },
-          { icon: <FaClock />, label: 'Categories', value: categories.length - 1 },
+          { icon: <FaRoute />, label: 'Learning Paths', value: 5 },
           { icon: <FaStar />, label: 'Favorites', value: favorites.length }
         ].map((stat, i) => (
           <motion.div
@@ -689,12 +701,35 @@ const CheatSheets = () => {
                   style={{
                     fontSize: '11px',
                     opacity: 0.6,
-                    marginBottom: '12px',
+                    marginBottom: '8px',
                     position: 'relative',
                     zIndex: 1
                   }}
                 >
                   📊 {sheet.techniques} techniques • ⏱️ {sheet.timeToRead}
+                </motion.div>
+              )}
+
+              {/* Learning Path badge */}
+              {sheet.learningPath && (
+                <motion.div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    background: `${sheet.color}18`,
+                    border: `1px solid ${sheet.color}44`,
+                    color: sheet.color,
+                    fontSize: '10px',
+                    fontWeight: '700',
+                    padding: '3px 8px',
+                    borderRadius: '10px',
+                    marginBottom: '10px',
+                    position: 'relative',
+                    zIndex: 1,
+                  }}
+                >
+                  🗺️ {sheet.learningPath}
                 </motion.div>
               )}
 
